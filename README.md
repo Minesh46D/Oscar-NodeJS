@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-<!-- # adminpro-react-lite -->
-<!-- Heading of Template -->
-<h1>
-  <a href="https://wrappixel.com/demos/free-admin-templates/adminpro-react-lite/main/">AdminPro React Admin Lite</a>
-</h1>
-
-<!-- Main image of Template -->
-<a target="_blank" href="https://www.wrappixel.com/wp-content/uploads/edd/2020/04/adminpro-react-dashboard-lite-y.jpg">
-  <img src="https://www.wrappixel.com/wp-content/uploads/edd/2020/04/adminpro-react-dashboard-lite-y.jpg" />
-</a>
-
-<!-- <h4><a href="https://wrappixel.com/demos/free-admin-templates/adminpro-react-lite/main/#/dashboard">Free Version Demo Link</a></h4> -->
-
-<!-- Description of Template -->
-<p>
-  Lorem Ipsume
-</p>
 
 
 
