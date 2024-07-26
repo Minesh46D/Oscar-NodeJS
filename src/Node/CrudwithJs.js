@@ -35,7 +35,7 @@ const printData = () => {
     let str = ''
     data.forEach((o, index) => {
         str = str.concat(`<tr>
-                <td>${o.id}</td>
+                <td>${index + 1}</td>
                 <td>${o.firstName}</td>
                 <td>${o.lastName}</td>
                 <td>${o.email}</td>
@@ -44,8 +44,8 @@ const printData = () => {
                 <td>${o.gender ?? 'none'}</td>
                 <td>${o.hobbies?.join(', ') ?? 'none'}</td>
                 <td class="text-nowrap">
-                    <button class="btn btn-warning mx-1" onClick = "editData(${index})">Edit</button>
-                    <button class="btn btn-danger mx-1" onClick = "deleteData(${index})">Delete</button>
+                    <button class="btn btn-warning mx-1" onClick = "editData(${o.id})">Edit</button>
+                    <button class="btn btn-danger mx-1" onClick = "deleteData(${o.id})">Delete</button>
                 </td>
             </tr>`)
         })
@@ -54,24 +54,50 @@ const printData = () => {
 }
 
 const deleteData = (id) => {
-    data.splice(id, 1)
+    // data.splice(id, 1)
+    data = data.filter((item) => +item.id !== +id)
     printData()
 }
 
-const editData = (index) => {
-    const obj = data[index]
-    const input = document.querySelectorAll('input:not([type="radio"]):not([type="checkbox"])')
-    const inputCheckbox = document.querySelectorAll('input[type="checkbox"]')
+const editData = (id) => {
+    const editUser = data.find((item) => +item.id === id)
 
-    input.forEach(x => x.value = obj[x.name])
-    document.querySelector(`input[type="radio"][value="${obj.gender}"]`).checked = true
-    inputCheckbox.forEach(x => {
-        if(obj.hobbies.includes(x.value)){
-            x.checked = true
+    const input = document.querySelectorAll('input')
+
+    input.forEach((inp) => {
+        for(const key in editUser){
+            if(inp.type === "checkbox" && inp.name === key){
+                if(editUser[key].includes(inp.value)){
+                    inp.checked = true
+                }else{
+                    inp.checked = false
+                }
+            }else if(inp.type === "radio" && inp.name === key){
+                if(editUser[key].includes(inp.value)){
+                    inp.checked = true
+                }else{
+                    inp.checked = false
+                }
+            }else if(inp.type !== "radio" && inp.type !== "checkbox"){
+                // console.log('------- inp : ' , inp)
+                inp.value = editUser[key]
+            }
         }
     })
-    oldData = true
-    oldDataIndex = index
+
+
+    // const input = document.querySelectorAll('input:not([type="radio"]):not([type="checkbox"])')
+    // const inputCheckbox = document.querySelectorAll('input[type="checkbox"]')
+
+    // input.forEach(x => x.value = obj[x.name])
+    // document.querySelector(`input[type="radio"][value="${obj.gender}"]`).checked = true
+    // inputCheckbox.forEach(x => {
+    //     if(obj.hobbies.includes(x.value)){
+    //         x.checked = true
+    //     }
+    // })
+    // oldData = true
+    oldDataIndex = id
 }
 
 

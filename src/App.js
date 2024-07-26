@@ -30,7 +30,7 @@ function App() {
 
   return (
     <>
-      <div className='h-screen bg-gradient-to-r from-cyan-500 to-blue-500 dark:bg-slate-700 flex justify-center items-center'>
+      <div className='h-screen bg-gradient-to-r from-cyan-500 to-blue-500 dark:bg-gradient-to-r dark:from-indigo-500 dark:via-purple-500 dark:to-pink-500  flex justify-center items-center'>
         <button onClick={handleThemeSwitch} className="bg-green-200 p-4 rounded-3xl dark:text-white dark:bg-black">
           Dark Mode
         </button>
