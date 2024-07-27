@@ -19,6 +19,8 @@ const handleSubmit = (e) => {
         user = {...user, id: Date.now()}
         data = [...data, user]
     }else{
+        user.id = editId
+        console.log('------- user : ' , user)
         data = data.map((item) => item.id === editId ? user : item)
         editId = ""
     }
