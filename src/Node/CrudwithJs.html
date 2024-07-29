@@ -9,16 +9,27 @@
 <body>
     <!-- fname, lastname, email, password, gender, skill, date, age, select(active/inactive) -->
     <div id="main" class="container m-auto">
-        <h2 class="text-center my-8 text-red-500 text-4xl">Crud with JS</h2>
+      <div class="mt-5 absolute top-0 bg-gray-950 text-gray-50 rounded-md dark:text-gray-950 dark:bg-gray-50 right-56">
+          <button class="w-8 h-8 flex justify-center items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
+              <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
+            </svg>
+          </i></button>
+      </div>
+      <a href="#_" class="px-5 py-2.5 relative rounded group overflow-hidden font-medium bg-purple-50 text-purple-600 inline-block">
+        <span class="absolute top-0 left-0 flex w-full h-0 mb-0 transition-all duration-200 ease-out transform translate-y-0 bg-purple-600 group-hover:h-full opacity-90"></span>
+        <span class="relative group-hover:text-white">Button Text</span>
+        </a>
+    <h2 class="my-8 text-4xl text-center text-red-500">Crud with JS</h2>
     <form onsubmit="handleSubmit(event)">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid gap-6 mb-6 md:grid-cols-2">
             <div class="">
-                <label for="firstName" class="">First Name</label>
-                <input type="text" class="" id="firstName" name="firstName">
+                <label for="firstName" class="block mb-2 text-sm text-gray-900 dark:text-white">First Name</label>
+                <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="firstName" name="firstName">
             </div>
             <div class="">
-                <label for="lastName" class="">Last Name</label>
-                <input type="text" class="" id="lastName" name="lastName">
+                <label for="lastName" class="block mb-2 text-sm text-gray-900">Last Name</label>
+                <input type="text" class="w-full p-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-600 focus:border-blue-500" id="lastName" name="lastName">
             </div>
             <div class="">
                 <label for="email" class="">Email</label>
@@ -74,13 +85,13 @@
                 </select>
             </div>
         </div>
-        <div class="text-center mt-5">
+        <div class="mt-5 text-center">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800  font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Submit</button>
             
         </div>
     </form>
 
-    <table class="table-auto w-full text-center mt-5">
+    <table class="w-full mt-5 text-center table-auto">
         <thead>
             <tr>
                 <th>id</th>
