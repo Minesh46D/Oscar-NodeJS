@@ -19,12 +19,16 @@
 		"prefix": ["=af"],
 		"body": ["(${1}) => ${0}"]
 	},
+	"const arrow function" : {
+		"prefix": ["c=af"],
+		"body": ["const ${1} = (${2}) => ${0}"]
+	},
 	"console with variable" : {
 		"prefix": ["clg"],
 		"body": ["console.log('------- ${1} : ' , ${1}${0})"]
 	},
 	"console" : {
-		"prefix": ["clgg"],
+		"prefix": ["ckg"],
 		"body": ["console.log('------- ${1} :')"]
 	}
 }
