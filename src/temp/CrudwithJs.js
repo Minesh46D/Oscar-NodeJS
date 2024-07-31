@@ -36,14 +36,12 @@ const handleDelete = (id) => {
 
 const handleEdit = (id) => {
     const editUser = data.find((item) => +item.id === +id)
-    console.log('------- editUser : ' , editUser)
+    
     const input = document.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), select')
-    const radio = document.querySelectorAll('input[type="radio"], input[type="checkbox"]')
-    // const check = document.querySelectorAll(`input[type="checkbox"]`)
+    const multiInput = document.querySelectorAll('input[type="radio"], input[type="checkbox"]')
 
     input.forEach((inp) => inp.value = editUser[inp.name]);
-    radio.forEach((item) => (editUser[item.name]?.includes(item.value)) ? item.checked = true : item.checked = false)
-    // check.forEach((item) => (editUser[item.name].includes(item.value)) ? item.checked = true : item.checked = false)
+    multiInput.forEach((item) => (editUser[item.name]?.includes(item.value)) ? item.checked = true : item.checked = false)
 
     editId = id
 }
