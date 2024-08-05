@@ -1,95 +1,69 @@
-const fs = require('fs')
 const express = require('express')
-const multer  = require('multer')
-const upload = multer()
 const app = express()
 const port = 9999
-const studentFileName = "./Swagger data/student.JSON"
-const userFileName = "./Swagger data/user.JSON"
+const fs = require('fs')
+const { setDefaultAutoSelectFamily } = require('net')
 
-app.use(express.json())         // app level
+const studentFileName = "swagger data/student.JSON"
 
-app.listen(port, () => {
-    console.log('------- server started :', port)
+
+app.listen( port, () => {
+    console.log('------- server start :', port)
 })
+app.use( express.json())            // Application level
 
-//  ----------------------------------- STUDENT API ----------------------------
-app.get('/student/get', (req, res) => {
-    const {id} = req.query;
+// ---------------------    Student     ---------------------
+
+app.get('/student/get', (req, res, next) => {
     const studentData = JSON.parse(fs.readFileSync(studentFileName))
-    if(id){
-        const newData = studentData.find((item) => `${item._id}` === `${id}`)
-        if(!newData){
-            res.send('studentData not found')
-            // res.writeHead(200, {'Content-Type': 'text/html'})
-        }else{
-            // res.writeHead(200, {'Content-Type': 'text/html'})
-            res.send(studentData.find((item) => `${item._id}` === `${id}`))
-        }
-    }else{
-        res.send(studentData)
+    if(req.query.id){
+        const selectedUser = studentData.find(( item ) => item._id === `${req.query.id}` )
+        selectedUser ? res.send(selectedUser) : res.send('user not found')
+        return
     }
+    res.send(studentData)
 })
 
-app.post('/student/add', (req, res) => {
+app.post('/student/add', ( req, res ) => {
     const studentData = JSON.parse(fs.readFileSync(studentFileName))
-    studentData.push(req.body)
+    req.body && studentData.push(req.body)
     fs.writeFileSync(studentFileName, JSON.stringify(studentData))
 
-    res.send(req.body)
-})
+    res.send('added!')
+} )
 
-app.post('/student/update', (req, res) => {
+app.post('/student/update', ( req, res ) => {
     let studentData = JSON.parse(fs.readFileSync(studentFileName))
-    const editId = req.body._id
-    const newData = studentData.find((item) => item._id === `${editId}`)
-    if(!newData){
-        // res.writeHead(404, {'Content-Type': 'text/html'})
-        res.send('studentData not found')
-    }else{
-        studentData = studentData.map((item) => item._id === `${editId}` ? req.body : item)
-        fs.writeFileSync(studentFileName, JSON.stringify(studentData))
+    if(req.body){
+        if( studentData.some(( item ) => item._id === `${req.body._id}` ) ){
+            studentData = studentData.map(( item ) => item._id === `${req.body._id}` ? req.body : item )
+            fs.writeFileSync(studentFileName, JSON.stringify(studentData))
 
-        // res.writeHead(200, {'Content-Type': 'text/html'})
-        res.send('updated!!')
-    }
-})
-
-app.delete('/student/delete', (req, res) => {
-    let studentData = JSON.parse(fs.readFileSync(studentFileName))
-    const {id} = req.query
-    const deleteData = studentData.find((item) => item._id === `${id}`)
-    if(!deleteData){
-        res.send('id not found')
-    }else{
-        studentData = studentData.filter((item) => item._id !== `${id}`)
-        fs.writeFileSync(studentFileName, JSON.stringify(studentData))
-    }
-
-    res.send('deleted')
-})
-
-//  ----------------------------------- USER API ----------------------------
-
-app.get('/user/get', (req, res) => {
-    const {id} = req.query;
-    const userData = JSON.parse(fs.readFileSync(userFileName))
-    if(id){
-        const selectedUser = userData.find((item) => `${item._id}` === `${id}`)
-        if(selectedUser){
-            res.send(selectedUser)
+            res.send(req.body)
         }else{
-            res.send('user not found')
+            res.send('data not found')
         }
-    }else{
-        res.send(userData)
+        return
     }
-})
+    res.send('body not found')
+} )
 
-app.post('/user/add', upload.none() , (req, res) => {
-    console.log('------- req.header : ' , req.body)
-    const userData = JSON.parse(fs.readFileSync(userFileName))
-    userData.push(req.body)
-    fs.writeFileSync(userFileName, JSON.stringify(userData))
-    res.send(req.body)
-})
+app.delete('/student/delete', ( req, res ) => {
+    const studentData = JSON.parse(fs.readFileSync(studentFileName))
+    if(req.query.id){
+        const deleteIndex = studentData.findIndex(( item ) => item._id === `${req.query.id}` )
+        if(deleteIndex != -1){
+            studentData.splice(deleteIndex, 1)
+            res.send('deleted!!')
+            fs.writeFileSync(studentFileName, JSON.stringify(studentData))
+        }else{
+            res.send('data not found')
+        }
+        return
+    }
+    res.send('data not found')
+} )
+
+
+// ---------------------    User     ---------------------
+
