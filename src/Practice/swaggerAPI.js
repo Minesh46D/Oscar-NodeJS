@@ -88,7 +88,7 @@ app.post('/user/add', upload.single('image') , ( req, res ) => {
     const userData = JSON.parse(fs.readFileSync(userFileName))
     if(req.body){
         userData.push(req.body)
-        fs.writeFileSync(userFileName, JSON.stringify(userData))
+        // fs.writeFileSync(userFileName, JSON.stringify(userData))
         res.send(req.file)
         return
     }
