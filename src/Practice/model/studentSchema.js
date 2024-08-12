@@ -3,9 +3,13 @@ const {Schema, model} = mongoose
 
 const studentSchema = new Schema({
     studentId: Number,
-    studentName: String,
+    studentName: {
+        type: String,
+        required: true,
+        lowercase: true
+    },
     age: Number
-})
+}, {timestamps: true})
 
 const student = model('students', studentSchema)
 
