@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ngneat/falso": "^7.2.0",
     "@reduxjs/toolkit": "^2.2.6",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/jest-dom": "5.16.5",
@@ -12,6 +13,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "1.10.5",
     "express": "^4.19.2",
+    "mongoose": "^8.5.2",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.4",
     "react": "18.2.0",
@@ -29,7 +31,7 @@
     "web-vitals": "2.1.4"
   },
   "scripts": {
-    "start": "nodemon ./src/practice/swaggerAPI-async.js"
+    "start": "nodemon ./src/practice/routingWithMongodb.js"
   },
   "eslintConfig": {
     "extends": [
