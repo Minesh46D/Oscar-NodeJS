@@ -12,6 +12,12 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+    user_Email: {
+        type: String,
+        required: [true, 'email is required'],
+        lowercase: true,
+        trim: true
+    },
     role_ID: {
         type: Number,
         ref: "role",
@@ -22,6 +28,15 @@ const userSchema = new mongoose.Schema({
         required: [true, 'password is required'],
         trim: true
     },
+    gender: {
+        type: String,
+        required: [true, 'gender is required'],
+        enum: ["Male","Female","Others"]
+    },
+    phone_no:{
+        type: Number,
+        required: [true,'phone number is required']
+    },
     otp: {
         type: Number,
         default: 0
@@ -29,4 +44,4 @@ const userSchema = new mongoose.Schema({
     
 }, {timestamp:true})
 
-module.exports = user = mongoose.model('user', userSchema);
+module.exports = UserDB = mongoose.model('user', userSchema);

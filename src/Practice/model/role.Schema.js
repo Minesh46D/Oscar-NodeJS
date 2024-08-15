@@ -16,4 +16,4 @@ const roleSchema = new mongoose.Schema({
     role_Description: String
 }, {timestamp: true})
 
-module.exports = role = mongoose.model('role', roleSchema)
+module.exports = RoleDB = mongoose.model('role', roleSchema)
