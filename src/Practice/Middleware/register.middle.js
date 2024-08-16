@@ -1,4 +1,5 @@
 const UserDB = require('../model/user.Schema')
+const RoleDB = require('../model/role.Schema')
 
 
 
@@ -24,7 +25,12 @@ const checkEmailExist = async ( req, res, next ) => {
 
 const checkOldPassword = async ( req, res, next ) => {
     console.log('------- check old password...')
-    const user = await UserDB.findOne({user_ID: req.local.user_ID})
+    let user = {}
+    if(req.local.user_ID){
+        user = await UserDB.findOne({user_ID: req.local.user_ID})
+    }else{
+        user = await UserDB.findOne({user_ID: req.local.user_Email})
+    }
     if(user.password === req.body.password){
         return res.status(403).json({status: false, error: 'the password must not be the same as the old password'})
     }
@@ -32,6 +38,15 @@ const checkOldPassword = async ( req, res, next ) => {
     next()
 }
 
+const checkRoleID = async ( req, res, next ) => {
+    console.log('------- check role ID...')
+    const roleExist = RoleDB.exists({role_ID: req.body?.roleID})
+    if(!roleExist){
+        return res.status(401).json({status: false, error: 'role ID not found'})
+    }
+    next()
+} 
 
 
-module.exports = {confirmPassword, checkEmailExist, checkOldPassword}
+
+module.exports = {confirmPassword, checkEmailExist, checkOldPassword, checkRoleID}
