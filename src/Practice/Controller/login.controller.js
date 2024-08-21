@@ -6,7 +6,7 @@ const { Types } = require('mongoose')
 const userRegister = async ( req, res ) => {
     try {
         console.log('------- user register :')
-        delete req.body.confirm_password
+        // delete req.body.confirm_password             // no need to delete. schema won't allow any data that are not specified
         const data = await UserDB.create({...req.body, user_ID: new Types.ObjectId})
         res.send(data)
     } catch (error) {
