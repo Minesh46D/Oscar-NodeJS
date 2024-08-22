@@ -23,6 +23,10 @@
 		"prefix": ["c=af"],
 		"body": ["const ${1} = ( ${2} ) => ${0} "]
 	},
+	"export arrow function" : {
+		"prefix": ["e=af"],
+		"body": ["export const ${1} = ( ${2} ) => ${0} "]
+	},
 	"console with variable" : {
 		"prefix": ["clg"],
 		"body": ["console.log('------- ${1} : ' , ${1}${0})"]
