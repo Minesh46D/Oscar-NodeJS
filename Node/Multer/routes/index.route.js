@@ -1,7 +1,7 @@
 import express from 'express'
-const router = express.Router()
+const multerRouter = express.Router()
 import product from './product.route.js'
 
-router.use('/product', product)
+multerRouter.use('/product', product)
 
-export default router
+export default multerRouter
