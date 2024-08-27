@@ -1,14 +1,12 @@
-const { Schema, model } = require("mongoose");
+import { model, Schema } from "mongoose"
 
 
-const userSchema = Schema({
+const userSchema = new Schema({
     userName: {
         type: String,
-        required: [true, 'userName is required'],
+        required: [true, 'userName is require'],
         lowercase: true,
-        trim: true,
-        minLength: [6, 'username must be between 6 and 12 letters'],
-        maxLength: [12, 'username must be between 6 and 12 letters']
+        trim: true
     },
     email: {
         type: String,
@@ -23,7 +21,7 @@ const userSchema = Schema({
         type: String,
         required: [true, 'password is required'],
         trim: true,
-        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,'Minimum eight characters, at least one letter and one number']
+        // match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,'Minimum eight characters, at least one letter and one number']
     },
     role_ID: {
         type: Number,
@@ -40,7 +38,7 @@ const userSchema = Schema({
         type: String,
         required: [true,'firstName is required'],
         trim: true,
-        maxLength: [12, 'userName is invalid']
+        maxLength: [12, 'firstName is invalid']
     },
     lastName: {
         type: String,
@@ -57,7 +55,14 @@ const userSchema = Schema({
     status: {
         type: Boolean,
         default: false
+    },
+    otp: {
+        type: Number,
+        default: 0
+    },
+    otp_ExpireTime: {
+        type: Date,
+        default: Date.now
     }
 })
-
-export default user = model('user', userSchema)
+export const UserDB = model('user', userSchema)
