@@ -1,8 +1,9 @@
 import { UserDB } from "../models/user.model.js"
 import bcrypt, { hash } from 'bcrypt'
 import { generateOTP } from "../utilities/generateOTP.util.js"
-import { JsonWebTokenError as jwt } from "jsonwebtoken"
+import jwt from "jsonwebtoken"
 import { RoleDB } from "../models/role.model.js"
+import { tryCatch } from "../utilities/tryCatch.util.js"
 
 export const userRegister = async ( req, res ) => {
     const { userName, email, password, phone_no, firstName, lastName, gender } = req.body
@@ -111,22 +112,7 @@ export const forgotPassword = async ( req, res ) =>  {
 
 }
 
-export const otpVerify = async ( req, res ) => {
-    const { code } = req.body;
-    try{
-        const user = await UserDB.findOne({email: req.email, otp: code, otp_ExpireTime: {$gt: Date.now()}})
-        if(!user){
-            return res.status(400).json({status: false, message: "Invalid OTP"})
-        }
-        user.otp = undefined
-        user.expireTime = undefined
-        await user.save()
 
-        return res.status(200).json({status: true, message: "OTP verify successfully"})
-    } catch( error ){
-        return res.status(400).json({status: false, message: error.message})
-    }
-}
 
 export const changePassword = async ( req, res ) =>  {
     const { newPassword, confirmPassword, email } = req.body
@@ -183,3 +169,15 @@ export const resetPassword = async ( req, res ) => {
         return res.status(200).json({status: false, message: error.message})
     }
 } 
+
+export const otpVerify = tryCatch( async ( req, res ) => {
+    const user = await UserDB.findOne({email: req.email, otp: code, otp_ExpireTime: {$gt: Date.now()}})
+        if(!user){
+            return res.status(400).json({status: false, message: "Invalid OTP"})
+        }
+        user.otp = undefined
+        user.expireTime = undefined
+        await user.save()
+
+        return res.status(200).json({status: true, message: "OTP verify successfully"})
+} )
