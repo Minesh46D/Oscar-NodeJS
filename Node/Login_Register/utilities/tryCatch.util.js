@@ -1,9 +1,9 @@
 import { resStatus } from "./resStatus.util.js"
 
-export const tryCatch = async ( req, res, next ) => {
+export const tryCatch = async ( fun ) => {
     try {
-        return (req, res, next)
+        return fun
     } catch (error) {
-        resStatus(400, res, error.message)
+        console.log('------- error...')
     }
 } 

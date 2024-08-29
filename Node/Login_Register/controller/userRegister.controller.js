@@ -170,14 +170,25 @@ export const resetPassword = async ( req, res ) => {
     }
 } 
 
-export const otpVerify = tryCatch( async ( req, res ) => {
-    const user = await UserDB.findOne({email: req.email, otp: code, otp_ExpireTime: {$gt: Date.now()}})
-        if(!user){
-            return res.status(400).json({status: false, message: "Invalid OTP"})
-        }
-        user.otp = undefined
-        user.expireTime = undefined
-        await user.save()
+export const otpVerify = await tryCatch( async ( req, res, next ) => {
+    const { code } = req.body
+    const user = await UserDB.findne({email: req.email, otp: code, otp_ExpireTime: {$gt: Date.now()}})
+    if(!user){
+        return res.status(400).json({status: false, message: "Invalid OTP"})
+    }
+    user.otp = undefined
+    user.expireTime = undefined
+    await user.save()
 
-        return res.status(200).json({status: true, message: "OTP verify successfully"})
+    return res.status(200).json({status: true, message: "OTP verify successfully"})
 } )
+
+// const user = await UserDB.findOne({email: req.email, otp: code, otp_ExpireTime: {$gt: Date.now()}})
+//         if(!user){
+//             return res.status(400).json({status: false, message: "Invalid OTP"})
+//         }
+//         user.otp = undefined
+//         user.expireTime = undefined
+//         await user.save()
+
+//         return res.status(200).json({status: true, message: "OTP verify successfully"})

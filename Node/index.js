@@ -5,6 +5,8 @@ import dbConnect from './db/dbConnect.js'
 import multerRouter from './Multer/routes/index.route.js'
 import loginRouter from './Login_Register/routes/index.route.js'
 import { errorHandler } from './Login_Register/middleware/errorHandler.middle.js'
+import swaggerUI from 'swagger-ui-express'
+import swaggerDocument from './Login_Register/utilities/Swagger.json' assert { type: "json" }
 dbConnect()
 
 app.use(express.json())
@@ -23,6 +25,7 @@ app.use(express.static('uploads'))
 
 app.use('/multer', multerRouter)
 app.use('/login-register', loginRouter)
+
 
 app.use(errorHandler)
 
