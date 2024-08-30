@@ -5,11 +5,10 @@ import jwt from "jsonwebtoken";
 import { RoleDB } from "../models/role.model.js";
 import { tryCatch } from "../utilities/tryCatch.util.js";
 import { resStatus } from "../utilities/resStatus.util.js";
+import { sendMail } from "../utilities/sendMail.util.js";
 
 export const userRegister = tryCatch(async (req, res) => {
-  res.send('done')
-  return //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  const { userName, email, password, firstName, lastName, gender } = req.body;
+  const { userName, email, password, firstName, lastName, gender, phone_no } = req.body;
   // ---------------------    Empty Field validation     ---------------------
   if ( [userName, email, password, firstName, lastName, gender].some((field) => !field)) {
     return resStatus(400, res, 'All fields are required')
@@ -37,8 +36,7 @@ export const userRegister = tryCatch(async (req, res) => {
 
   const otp = await generateOTP();
   const expireTime = Date.now() + 1 * 60 * 60 * 1000;
-
-  console.log("------- userName : ", userName);
+  
   const user = await UserDB.create({
     userName,
     email,
@@ -53,6 +51,7 @@ export const userRegister = tryCatch(async (req, res) => {
 
   const getUser = await UserDB.findOne({ _id: user._id }).select("-password");
 
+  const sentEmail = await sendMail()
   res.status(200).json({ status: true, message: "Registered", data: getUser });
 });
 

@@ -12,7 +12,6 @@ export const validationAsync = ( validationRequest ) => async ( req, res, next )
     // } )
     try {
         const value = await loginValidation[validationRequest].validateAsync( req.body )
-        console.log('------- value : ' , value)
         next()
     } catch (error) {
         resStatus(400, res, error.message)
