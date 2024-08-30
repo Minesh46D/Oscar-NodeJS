@@ -21,7 +21,7 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'password is required'],
         trim: true,
-        // match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,'Minimum eight characters, at least one letter and one number']
+        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,'Minimum eight characters, at least one letter and one number']
     },
     role_ID: {
         type: Number,
@@ -31,7 +31,7 @@ const userSchema = new Schema({
     },
     phone_no: {
         type: Number,
-        required: [true,'phone number is required'],
+        // required: [true,'phone number is required'],
         match: [/[0-9]{10}/, 'phone numebr is invalid'],
     },
     firstName: {

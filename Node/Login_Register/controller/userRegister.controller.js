@@ -4,25 +4,20 @@ import { generateOTP } from "../utilities/generateOTP.util.js";
 import jwt from "jsonwebtoken";
 import { RoleDB } from "../models/role.model.js";
 import { tryCatch } from "../utilities/tryCatch.util.js";
+import { resStatus } from "../utilities/resStatus.util.js";
 
-export const userRegister = tryCatch( async (req, res) => {
-  const { userName, email, password, phone_no, firstName, lastName, gender } =
-    req.body;
-
+export const userRegister = tryCatch(async (req, res) => {
+  res.send('done')
+  return //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const { userName, email, password, firstName, lastName, gender } = req.body;
   // ---------------------    Empty Field validation     ---------------------
-  if (
-    [userName, email, password, phone_no, firstName, lastName, gender].some(
-      (field) => !field
-    )
-  ) {
-    return res
-      .status(400)
-      .json({ status: false, message: "All fields are required" });
+  if ( [userName, email, password, firstName, lastName, gender].some((field) => !field)) {
+    return resStatus(400, res, 'All fields are required')
   }
-
   const checkUser = await UserDB.exists({
     $or: [{ email }, { phone_no }, { userName }],
   });
+  
   if (checkUser) {
     return res
       .status(400)
@@ -59,9 +54,9 @@ export const userRegister = tryCatch( async (req, res) => {
   const getUser = await UserDB.findOne({ _id: user._id }).select("-password");
 
   res.status(200).json({ status: true, message: "Registered", data: getUser });
-} )
+});
 
-export const userLogin = tryCatch( async (req, res) => {
+export const userLogin = tryCatch(async (req, res) => {
   const { user, password } = req.body;
   if ([user, password].some((item) => !item)) {
     return res
@@ -116,9 +111,9 @@ export const userLogin = tryCatch( async (req, res) => {
     },
     token: token,
   });
-} )
+});
 
-export const forgotPassword = tryCatch( async (req, res) => {
+export const forgotPassword = tryCatch(async (req, res) => {
   const { email } = req.body;
   const user = await UserDB.findOne({ email });
   if (!user) {
@@ -144,9 +139,9 @@ export const forgotPassword = tryCatch( async (req, res) => {
     .status(200)
     .json({ status: true, message: "Email verify success" });
   return res.status(400).json({ status: false, message: error.message });
-} )
+});
 
-export const changePassword = tryCatch( async (req, res) => {
+export const changePassword = tryCatch(async (req, res) => {
   const { newPassword, confirmPassword, email } = req.body;
   if ([newPassword, confirmPassword].some((item) => !item)) {
     return res
@@ -183,7 +178,7 @@ export const changePassword = tryCatch( async (req, res) => {
     .status(200)
     .json({ status: true, message: "Password updated successfully" });
   return res.status(200).json({ status: false, message: error.message });
-} )
+});
 
 export const resetPassword = tryCatch(async (req, res) => {
   const { oldPassword, newPassword, confirmPassword, email } = req.body;
