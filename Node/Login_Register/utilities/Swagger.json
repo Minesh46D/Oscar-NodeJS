@@ -1,208 +1,548 @@
 {
-  "definitions": {
-    "info": {
-      "type": "object",
-      "properties": {
-        "_postman_id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "schema": {
-          "type": "string"
-        },
-        "_exporter_id": {
-          "type": "string"
-        }
-      }
-    },
-    "item": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "item": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "event": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "listen": {
-                        "type": "string"
+  "collection": {
+      "info": {
+          "_postman_id": "1be8e9f5-edc0-4cd9-a77d-b2239df66e36",
+          "name": "Mangodb",
+          "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+          "updatedAt": "2024-08-21T17:50:07.000Z",
+          "createdAt": "2024-08-09T10:36:23.000Z",
+          "lastUpdatedBy": "37393905",
+          "uid": "37393905-1be8e9f5-edc0-4cd9-a77d-b2239df66e36"
+      },
+      "item": [
+          {
+              "name": "demo",
+              "item": [
+                  {
+                      "name": "Get",
+                      "event": [
+                          {
+                              "listen": "test",
+                              "script": {
+                                  "id": "34bb1bfd-adad-4da9-ab9f-e2bb06a709a5",
+                                  "exec": [
+                                      ""
+                                  ],
+                                  "type": "text/javascript",
+                                  "packages": {}
+                              }
+                          },
+                          {
+                              "listen": "prerequest",
+                              "script": {
+                                  "id": "e343e7ec-6b07-48cb-a426-631fc0e5a4d0",
+                                  "exec": [
+                                      ""
+                                  ],
+                                  "type": "text/javascript",
+                                  "packages": {}
+                              }
+                          }
+                      ],
+                      "id": "9cc7459e-c9f0-40d4-ab00-5a140fb04879",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
                       },
-                      "script": {
-                        "type": "object",
-                        "properties": {
-                          "exec": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {}
-                            }
+                      "request": {
+                          "method": "GET",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
+                              }
                           },
-                          "type": {
-                            "type": "string"
+                          "url": {
+                              "raw": "http://localhost:5000/students/get",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "students",
+                                  "get"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-9cc7459e-c9f0-40d4-ab00-5a140fb04879"
+                  },
+                  {
+                      "name": "Get by id",
+                      "event": [
+                          {
+                              "listen": "test",
+                              "script": {
+                                  "id": "f7a1ad89-096e-4de2-9240-2926d2ce2e0a",
+                                  "exec": [
+                                      ""
+                                  ],
+                                  "type": "text/javascript",
+                                  "packages": {}
+                              }
                           },
-                          "packages": {
-                            "type": "object",
-                            "properties": {}
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "protocolProfileBehavior": {
-                  "type": "object",
-                  "properties": {
-                    "disableBodyPruning": {
-                      "type": "boolean"
-                    }
-                  }
-                },
-                "request": {
-                  "type": "object",
-                  "properties": {
-                    "method": {
-                      "type": "string"
-                    },
-                    "header": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {}
-                      }
-                    },
-                    "body": {
-                      "type": "object",
-                      "properties": {
-                        "mode": {
-                          "type": "string"
-                        },
-                        "raw": {
-                          "type": "string"
-                        },
-                        "options": {
-                          "type": "object",
-                          "properties": {
-                            "raw": {
-                              "type": "object",
-                              "properties": {
-                                "language": {
-                                  "type": "string"
-                                }
+                          {
+                              "listen": "prerequest",
+                              "script": {
+                                  "id": "42f1e50b-da11-4a49-8549-9203c0535d19",
+                                  "exec": [
+                                      ""
+                                  ],
+                                  "type": "text/javascript",
+                                  "packages": {}
                               }
-                            }
                           }
-                        }
-                      }
-                    },
-                    "url": {
-                      "type": "object",
-                      "properties": {
-                        "raw": {
-                          "type": "string"
-                        },
-                        "protocol": {
-                          "type": "string"
-                        },
-                        "host": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "0": {
-                                "type": "string"
-                              },
-                              "1": {
-                                "type": "string"
-                              },
-                              "2": {
-                                "type": "string"
-                              },
-                              "3": {
-                                "type": "string"
-                              },
-                              "4": {
-                                "type": "string"
-                              },
-                              "5": {
-                                "type": "string"
-                              },
-                              "6": {
-                                "type": "string"
-                              },
-                              "7": {
-                                "type": "string"
-                              },
-                              "8": {
-                                "type": "string"
+                      ],
+                      "id": "c3f9836c-42df-4261-83fa-1c50127cbf41",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "method": "GET",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
                               }
-                            }
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/students/get?id=66b9fda3930811d22fc4e356",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "students",
+                                  "get"
+                              ],
+                              "query": [
+                                  {
+                                      "key": "id",
+                                      "value": "66b9fda3930811d22fc4e356"
+                                  }
+                              ]
                           }
-                        },
-                        "port": {
-                          "type": "string"
-                        },
-                        "path": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "0": {
-                                "type": "string"
-                              },
-                              "1": {
-                                "type": "string"
-                              },
-                              "2": {
-                                "type": "string"
-                              },
-                              "3": {
-                                "type": "string"
-                              },
-                              "4": {
-                                "type": "string"
-                              },
-                              "5": {
-                                "type": "string"
-                              },
-                              "6": {
-                                "type": "string"
-                              },
-                              "7": {
-                                "type": "string"
+                      },
+                      "response": [],
+                      "uid": "37393905-c3f9836c-42df-4261-83fa-1c50127cbf41"
+                  },
+                  {
+                      "name": "Add",
+                      "id": "d64a8b5c-4dcc-4647-bc70-fad3b76f3769",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "method": "POST",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n    \"studentId\": 1,\r\n    \"studentName\": \"acss\",\r\n    \"age\": 25\r\n}",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
                               }
-                            }
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/students/add",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "students",
+                                  "add"
+                              ]
                           }
-                        }
-                      }
-                    }
+                      },
+                      "response": [],
+                      "uid": "37393905-d64a8b5c-4dcc-4647-bc70-fad3b76f3769"
+                  },
+                  {
+                      "name": "update",
+                      "id": "ee44a5d9-7d5e-4ef2-925f-1c6ceff08e2a",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "method": "PATCH",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n        \"studentId\": 5,\r\n        \"studentName\": \"minesh\",\r\n        \"age\": 30\r\n}",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
+                              }
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/students/update?id=66ba0c05798ff29fedc8343a",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "students",
+                                  "update"
+                              ],
+                              "query": [
+                                  {
+                                      "key": "id",
+                                      "value": "66ba0c05798ff29fedc8343a",
+                                      "type": "text"
+                                  }
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-ee44a5d9-7d5e-4ef2-925f-1c6ceff08e2a"
+                  },
+                  {
+                      "name": "Delete",
+                      "id": "8deede3e-6d7f-4f32-a64d-161e2dfde47b",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "method": "DELETE",
+                          "header": [],
+                          "url": {
+                              "raw": "http://localhost:5000/students/delete?id=66ba0c04798ff29fedc83438",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "students",
+                                  "delete"
+                              ],
+                              "query": [
+                                  {
+                                      "key": "id",
+                                      "value": "66ba0c04798ff29fedc83438"
+                                  }
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-8deede3e-6d7f-4f32-a64d-161e2dfde47b"
                   }
-                },
-                "response": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {}
+              ],
+              "id": "f990be1a-43f0-4d13-bb72-9689833131bd",
+              "uid": "37393905-f990be1a-43f0-4d13-bb72-9689833131bd"
+          },
+          {
+              "name": "Login/Register",
+              "item": [
+                  {
+                      "name": "Register",
+                      "id": "c726fddc-5a39-4e92-a47b-45f8a8952d30",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "method": "POST",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n    \"userName\": \"OscP1==\",\r\n    \"email\": \"p@p.com1\",\r\n    \"password\": \"abc123456\",\r\n    \"confirm_password\": \"abc123456\",\r\n    \"role_ID\": 10\r\n}",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
+                              }
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/login-register/user/register",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "login-register",
+                                  "user",
+                                  "register"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-c726fddc-5a39-4e92-a47b-45f8a8952d30"
+                  },
+                  {
+                      "name": "Login",
+                      "id": "85ab016f-eb57-4734-8cfd-ca373197a866",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "auth": {
+                              "type": "bearer"
+                          },
+                          "method": "POST",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n    \"user_Email\": \"minesh@test.com\",\r\n    \"password\": \"pword123\"\r\n}",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
+                              }
+                          },
+                          "url": {
+                              "raw": "http://127.0.0.1:5000/login-register/user/register",
+                              "protocol": "http",
+                              "host": [
+                                  "127",
+                                  "0",
+                                  "0",
+                                  "1"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "login-register",
+                                  "user",
+                                  "register"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-85ab016f-eb57-4734-8cfd-ca373197a866"
+                  },
+                  {
+                      "name": "Get user",
+                      "id": "2035d130-45f2-4a63-9345-1634f0b536eb",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                  {
+                                      "key": "token",
+                                      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9Aby5jb20iLCJyb2xlIjoiVXNlciIsInJvbGVfSUQiOjMsImlhdCI6MTcyMzc0MTYyOSwiZXhwIjoxNzIzNzQ1MjI5fQ.1g1i9zyJTdCHJN3hjp2pPo5S53MYGSn9FlIv_r5FZFg",
+                                      "type": "string"
+                                  }
+                              ]
+                          },
+                          "method": "GET",
+                          "header": [],
+                          "url": {
+                              "raw": "http://localhost:5000/login/getUser",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "login",
+                                  "getUser"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-2035d130-45f2-4a63-9345-1634f0b536eb"
+                  },
+                  {
+                      "name": "Verify Email",
+                      "id": "76bd0675-a603-4ead-9775-889d03768b81",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "method": "GET",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n    \"user_Email\": \"o@o.com\"\r\n}",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
+                              }
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/login/verifyEmail",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "login",
+                                  "verifyEmail"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-76bd0675-a603-4ead-9775-889d03768b81"
+                  },
+                  {
+                      "name": "Verify OTP",
+                      "id": "450ec05b-68a5-4174-9d1c-72bf9439701d",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                  {
+                                      "key": "token",
+                                      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9Aby5jb20iLCJpYXQiOjE3MjM3NDkxMDksImV4cCI6MTcyNDM0OTEwOX0.bfieut-wZp0dQDxeFGpVgpqB0t6V1DTKXWawMkV_ahM",
+                                      "type": "string"
+                                  }
+                              ]
+                          },
+                          "method": "GET",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n    \"otp\": 2959\r\n}",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
+                              }
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/login/verifyOTP",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "login",
+                                  "verifyOTP"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-450ec05b-68a5-4174-9d1c-72bf9439701d"
+                  },
+                  {
+                      "name": "Reset Password",
+                      "id": "0023ea25-57ae-4bed-9357-bb1bedb47032",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                  {
+                                      "key": "token",
+                                      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX0lEIjoiNjZiZTMyOWZkNDhhY2JjNzlmNDlmNTI5Iiwib2xkUGFzc3dvcmQiOiJvMTIzIiwiaWF0IjoxNzIzNzQ5MTYzLCJleHAiOjE3MjQzNDkxNjN9.hGeLfdDP7VsDbrr6g1F12i1Uvo35dTL4vciDrS6MS1s",
+                                      "type": "string"
+                                  }
+                              ]
+                          },
+                          "method": "GET",
+                          "header": [],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n    \"password\": \"abc12\",\r\n    \"confirm_password\" : \"abc12\"\r\n}",
+                              "options": {
+                                  "raw": {
+                                      "language": "json"
+                                  }
+                              }
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/login/resetPassword",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "login",
+                                  "resetPassword"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-0023ea25-57ae-4bed-9357-bb1bedb47032"
                   }
-                }
-              }
-            }
+              ],
+              "id": "505f7072-05a2-4288-be7c-e187550da54d",
+              "uid": "37393905-505f7072-05a2-4288-be7c-e187550da54d"
+          },
+          {
+              "name": "Multer",
+              "item": [
+                  {
+                      "name": "Get",
+                      "id": "4d2b90b2-c57b-46d9-a5d1-206cf4e5169b",
+                      "protocolProfileBehavior": {
+                          "disableBodyPruning": true
+                      },
+                      "request": {
+                          "method": "POST",
+                          "header": [],
+                          "body": {
+                              "mode": "formdata",
+                              "formdata": [
+                                  {
+                                      "key": "id",
+                                      "value": "123",
+                                      "type": "text"
+                                  },
+                                  {
+                                      "key": "name",
+                                      "value": "minesh",
+                                      "type": "text"
+                                  },
+                                  {
+                                      "key": "age",
+                                      "value": "20",
+                                      "type": "text"
+                                  },
+                                  {
+                                      "key": "image",
+                                      "type": "file",
+                                      "src": "/G:/Other computers/ASUS laptop/Programming/React/Image/Android.png"
+                                  }
+                              ]
+                          },
+                          "url": {
+                              "raw": "http://localhost:5000/multer/product/add",
+                              "protocol": "http",
+                              "host": [
+                                  "localhost"
+                              ],
+                              "port": "5000",
+                              "path": [
+                                  "multer",
+                                  "product",
+                                  "add"
+                              ]
+                          }
+                      },
+                      "response": [],
+                      "uid": "37393905-4d2b90b2-c57b-46d9-a5d1-206cf4e5169b"
+                  }
+              ],
+              "id": "12da2e3f-f03e-42ee-8383-551078fbb0fe",
+              "uid": "37393905-12da2e3f-f03e-42ee-8383-551078fbb0fe"
           }
-        }
-      }
-    }
+      ]
   }
 }

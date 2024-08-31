@@ -8,15 +8,20 @@ import { resStatus } from "../utilities/resStatus.util.js";
 import { sendMail } from "../utilities/sendMail.util.js";
 
 export const userRegister = tryCatch(async (req, res) => {
-  const { userName, email, password, firstName, lastName, gender, phone_no } = req.body;
+  const { userName, email, password, firstName, lastName, gender, phone_no } =
+    req.body;
   // ---------------------    Empty Field validation     ---------------------
-  if ( [userName, email, password, firstName, lastName, gender].some((field) => !field)) {
-    return resStatus(400, res, 'All fields are required')
+  if (
+    [userName, email, password, firstName, lastName, gender].some(
+      (field) => !field
+    )
+  ) {
+    return resStatus(400, res, "All fields are required");
   }
   const checkUser = await UserDB.exists({
     $or: [{ email }, { phone_no }, { userName }],
   });
-  
+
   if (checkUser) {
     return res
       .status(400)
@@ -36,7 +41,7 @@ export const userRegister = tryCatch(async (req, res) => {
 
   const otp = await generateOTP();
   const expireTime = Date.now() + 1 * 60 * 60 * 1000;
-  
+
   const user = await UserDB.create({
     userName,
     email,
@@ -51,7 +56,7 @@ export const userRegister = tryCatch(async (req, res) => {
 
   const getUser = await UserDB.findOne({ _id: user._id }).select("-password");
 
-  const sentEmail = await sendMail()
+  const sentEmail = await sendMail();
   res.status(200).json({ status: true, message: "Registered", data: getUser });
 });
 
@@ -133,11 +138,13 @@ export const forgotPassword = tryCatch(async (req, res) => {
     "diwmaodimawodimwaodi",
     { expireIn: "10m" }
   );
-
-  return res
-    .status(200)
-    .json({ status: true, message: "Email verify success" });
-  return res.status(400).json({ status: false, message: error.message });
+  try {
+    return res
+      .status(200)
+      .json({ status: true, message: "Email verify success" });
+  } catch (error) {
+    return res.status(400).json({ status: false, message: error.message });
+  }
 });
 
 export const changePassword = tryCatch(async (req, res) => {
@@ -172,11 +179,13 @@ export const changePassword = tryCatch(async (req, res) => {
     { _id: user._id },
     { $set: { password: hashPassword } }
   );
-
-  return res
-    .status(200)
-    .json({ status: true, message: "Password updated successfully" });
-  return res.status(200).json({ status: false, message: error.message });
+  try {
+    return res
+      .status(200)
+      .json({ status: true, message: "Password updated successfully" });
+  } catch (error) {
+    return res.status(200).json({ status: false, message: error.message });
+  }
 });
 
 export const resetPassword = tryCatch(async (req, res) => {
@@ -205,10 +214,13 @@ export const resetPassword = tryCatch(async (req, res) => {
     { _id: user._id },
     { $set: { password: hashPassword } }
   );
-  return res
-    .status(200)
-    .json({ status: true, message: "password reset success" });
-  return res.status(200).json({ status: false, message: error.message });
+  try {
+    return res
+      .status(200)
+      .json({ status: true, message: "password reset success" });
+  } catch (error) {
+    return res.status(200).json({ status: false, message: error.message });
+  }
 });
 
 export const otpVerify = tryCatch(async (req, res, next) => {

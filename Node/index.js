@@ -5,8 +5,6 @@ import dbConnect from './db/dbConnect.js'
 import multerRouter from './Multer/routes/index.route.js'
 import loginRouter from './Login_Register/routes/index.route.js'
 import { errorHandler } from './Login_Register/middleware/errorHandler.middle.js'
-import swaggerUI from 'swagger-ui-express'
-import swaggerDocument from './Login_Register/utilities/Swagger.json' assert { type: "json" }
 import { resStatus } from './Login_Register/utilities/resStatus.util.js'
 dbConnect()
 app.listen(process.env.PORT, (  ) => console.log('------- server started at...', process.env.PORT) )
