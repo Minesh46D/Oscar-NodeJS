@@ -1,5 +1,10 @@
 import { model, Schema } from "mongoose"
 
+var validateEmail = function(password) {
+    var re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return re.test(password)
+};
+
 
 const userSchema = new Schema({
     userName: {
@@ -21,7 +26,8 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'password is required'],
         trim: true,
-        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,'Minimum eight characters, at least one letter and one number']
+        // validate: [validateEmail, "Minimum eight characters, at least one letter and one number"],
+        // match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,'Minimum eight characters, at least one letter and one number']
     },
     role_ID: {
         type: Number,
@@ -30,7 +36,7 @@ const userSchema = new Schema({
         max: [20, 'role_ID is invalid']
     },
     phone_no: {
-        type: Number,
+        type: String,
         // required: [true,'phone number is required'],
         match: [/[0-9]{10}/, 'phone numebr is invalid'],
     },

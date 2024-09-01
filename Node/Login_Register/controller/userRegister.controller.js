@@ -8,39 +8,38 @@ import { resStatus } from "../utilities/resStatus.util.js";
 import { sendMail } from "../utilities/sendMail.util.js";
 
 export const userRegister = tryCatch(async (req, res) => {
-  const { userName, email, password, firstName, lastName, gender, phone_no } =
+  console.log('------- userRegister...')
+  const { userName, email, password, firstName, lastName, gender, phone_no, confirm_password } =
     req.body;
   // ---------------------    Empty Field validation     ---------------------
-  if (
-    [userName, email, password, firstName, lastName, gender].some(
-      (field) => !field
-    )
-  ) {
+  if ([userName, email, password, firstName, lastName, gender].some((field) => !field)){
     return resStatus(400, res, "All fields are required");
   }
+  
+  // ---------------------    User Already Exist     ---------------------
   const checkUser = await UserDB.exists({
     $or: [{ email }, { phone_no }, { userName }],
   });
-
+  
   if (checkUser) {
     return res
       .status(400)
       .json({ status: false, message: "User already exists" });
   }
 
+  
+  // ---------------------    Confirm Password Check     ---------------------
   const hashPassword = await bcrypt.hash(password, 10);
-  const checkPass = await bcrypt.compare(
-    req.body.confirm_password,
-    hashPassword
-  );
+  const checkPass = await bcrypt.compare( confirm_password, hashPassword );
   if (!checkPass) {
-    return res
-      .status(400)
-      .json({ status: false, message: "Password does not match" });
+    return resStatus(400, res, 'Password does not matchxxx')
   }
 
+  
+  // ---------------------    Generate OTP     ---------------------
   const otp = await generateOTP();
   const expireTime = Date.now() + 1 * 60 * 60 * 1000;
+  const sentEmail = await sendMail(`Your OTP is : ${otp}`);
 
   const user = await UserDB.create({
     userName,
@@ -53,68 +52,63 @@ export const userRegister = tryCatch(async (req, res) => {
     otp,
     otp_ExpireTime: expireTime,
   });
-
+  
+  
+  // ---------------------    Remove password from response     ---------------------
   const getUser = await UserDB.findOne({ _id: user._id }).select("-password");
 
-  const sentEmail = await sendMail();
   res.status(200).json({ status: true, message: "Registered", data: getUser });
 });
 
 export const userLogin = tryCatch(async (req, res) => {
-  const { user, password } = req.body;
-  if ([user, password].some((item) => !item)) {
-    return res
-      .status(400)
-      .json({ status: false, message: "All Field are required" });
+  const { userName, password } = req.body;
+  if ([userName, password].some((item) => !item)) {
+    return resStatus(400, res, "All Field are required")
   }
 
-  let checkUser;
-  if (typeof uesr === "number") {
-    checkUser = await UserDB.findOne({ phone_no: user });
-  } else {
-    checkUser = await UserDB.findOne({
-      $or: [{ email: user }, { userName: user }],
-    });
+  let User;
+  // if (typeof uesr === "number") {
+  //   User = await UserDB.findOne({ phone_no: userName });
+  // } else {
+  //   User = await UserDB.findOne({
+  //     $or: [{ email: userName }, { userName: userName }],
+  //   });
+  // }
+  User = await UserDB.findOne({
+    $or: [{ email: userName }, { userName: userName }, { phone_no: userName }],
+  });
+  if (!User) {
+    return resStatus(400, res, 'Invalid Username or Password')
   }
 
-  if (!checkUser) {
-    return res
-      .status(400)
-      .json({ status: false, message: "Invalid Username or Password" });
-  }
-
-  const checkPass = await bcrypt.compare(password, checkUser.password);
+  const checkPass = await bcrypt.compare(password, User.password);
   if (!checkPass) {
-    return res
-      .status(400)
-      .json({ status: false, message: "Invalid Username or Password" });
+    return resStatus(400, res, "Invalid Username or Password")
   }
 
-  const getRole = await RoleDB.findOne({ role_Name: checkUser.role_Name });
+  const getRole = await RoleDB.findOne({ role_ID: User.role_ID });
   if (!getRole) {
-    return res.status(400).json({ status: false, message: "Invalid Role" });
+    return resStatus(400, res, 'Invalid Role')
   }
 
   const token = jwt.sign(
     {
-      email: checkUser.email,
+      email: User.email,
       role: getRole.role_Name,
     },
     "diwmaodimawodimwaodi",
-    { expireIn: "10h" }
+    { expiresIn: "10h" }
   );
-
-  return res.status(200).json({
-    status: true,
+  return resStatus(200, res, 'Logged in', {
     data: {
-      ...checkUser,
-      _doc,
+      ...User._doc,
       otp: undefined,
       password: undefined,
       otp_ExpireTime: undefined,
+      }
     },
-    token: token,
-  });
+    token
+  )
 });
 
 export const forgotPassword = tryCatch(async (req, res) => {
@@ -130,26 +124,21 @@ export const forgotPassword = tryCatch(async (req, res) => {
   user.otp = otp;
   user.otp_ExpireTime = expireTime;
   await user.save();
+  await sendMail(`Your OTP to reset Password is: ${otp}`)
 
-  const token = jwt.sign(
-    {
+  const token = jwt.sign({
       email: user.email,
     },
     "diwmaodimawodimwaodi",
     { expireIn: "10m" }
   );
-  try {
-    return res
-      .status(200)
-      .json({ status: true, message: "Email verify success" });
-  } catch (error) {
-    return res.status(400).json({ status: false, message: error.message });
-  }
+  return resStatus(200, res, `Email verify success, OTP sent to ${email} !`)
 });
 
 export const changePassword = tryCatch(async (req, res) => {
-  const { newPassword, confirmPassword, email } = req.body;
-  if ([newPassword, confirmPassword].some((item) => !item)) {
+  const updateMessage = ""
+  const { oldPassword, newPassword, confirmPassword, email } = req.body;
+  if ([oldPassword, newPassword, confirmPassword, email].some((item) => !item)) {
     return res
       .status(400)
       .json({ status: false, message: "All field are required" });
@@ -157,70 +146,36 @@ export const changePassword = tryCatch(async (req, res) => {
 
   const user = await UserDB.findOne({ email });
 
-  const checkOldPass = await bcrypt.compare(newPassword, user.password);
-
-  if (checkOldPass) {
-    return res.status(400).json({
-      status: false,
-      message: "new password can not be same as old password",
-    });
-  }
-
   const hashPassword = await bcrypt.hash(newPassword, 10);
-  const checkPass = await bcrypt.compare(confirmPassword, hashPassword);
 
-  if (!checkPass) {
-    return res
-      .status(400)
-      .json({ status: false, message: "Password not same" });
-  }
-
-  await UserDB.updateOne(
-    { _id: user._id },
-    { $set: { password: hashPassword } }
-  );
-  try {
-    return res
-      .status(200)
-      .json({ status: true, message: "Password updated successfully" });
-  } catch (error) {
-    return res.status(200).json({ status: false, message: error.message });
-  }
-});
-
-export const resetPassword = tryCatch(async (req, res) => {
-  const { oldPassword, newPassword, confirmPassword, email } = req.body;
-
-  const user = await UserDB.findOne({ email });
-  const checkPass = await bcrypt.compare(oldPassword, user.password);
-
-  if (!checkPass) {
-    return res
-      .status(400)
-      .json({ status: false, message: "old password not same" });
-  }
-
-  const hashPassword = await bcrypt.hash(newPassword, 10);
-  const checkNewPass = await bcrypt.compare(confirmPassword, hashPassword);
-
-  if (!checkNewPass) {
+  const checkBothPassword = await bcrypt.compare(confirmPassword, hashPassword);
+  if (!checkBothPassword) {
     return res.status(400).json({
       status: false,
       message: "New Password can not be same as old password",
     });
   }
 
+  
+  // ---------------------    Change Password     ---------------------
+  if(oldPassword){
+    updateMessage = 'Password Updated!!'
+    const checkOldPassword = await bcrypt.compare(oldPassword, user.password);
+    if (!checkOldPassword) {
+      return resStatus(400, res, 'Old password is not the same')
+    }
+  }
+  const checkOldPassword = bcrypt.compare(newPassword, user.password)
+  if(checkOldPassword){
+    return resStatus(400, res, 'New Password can not be the same as old password')
+  }
+
   await UserDB.updateOne(
     { _id: user._id },
     { $set: { password: hashPassword } }
   );
-  try {
-    return res
-      .status(200)
-      .json({ status: true, message: "password reset success" });
-  } catch (error) {
-    return res.status(200).json({ status: false, message: error.message });
-  }
+
+  return resStatus(200, res, updateMessage || "password updated")
 });
 
 export const otpVerify = tryCatch(async (req, res, next) => {
@@ -231,13 +186,11 @@ export const otpVerify = tryCatch(async (req, res, next) => {
     otp_ExpireTime: { $gt: Date.now() },
   });
   if (!user) {
-    return res.status(400).json({ status: false, message: "Invalid OTP" });
+    return resStatus(400, res, 'Invalid OTP')
   }
   user.otp = undefined;
   user.expireTime = undefined;
   await user.save();
 
-  return res
-    .status(200)
-    .json({ status: true, message: "OTP verify successfully" });
+  return resStatus(200, res, 'OTP verify successfully')
 });
