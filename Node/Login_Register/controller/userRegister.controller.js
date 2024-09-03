@@ -7,6 +7,7 @@ import { tryCatch } from "../utilities/tryCatch.util.js";
 import { resStatus } from "../utilities/resStatus.util.js";
 import { sendMail } from "../utilities/sendMail.util.js";
 import { generateRefCode } from "../utilities/generateRefCode.util.js";
+import { generateUUID } from "../utilities/generateUUID.util.js";
 
 export const userRegister = tryCatch(async (req, res) => {
   let ref_ID
@@ -29,7 +30,6 @@ export const userRegister = tryCatch(async (req, res) => {
       .json({ status: false, message: "User already exists" });
   }
 
-  
   // ---------------------    Confirm Password Check     ---------------------
   const hashPassword = await bcrypt.hash(password, 10);
   const checkPass = await bcrypt.compare( confirm_password, hashPassword );
@@ -45,14 +45,13 @@ export const userRegister = tryCatch(async (req, res) => {
     }
     ref_ID = refUser.userName
   }
-  
 
-  // ---------------------    Generate OTP, Ref Code    ---------------------
-  const otp = await generateOTP();
+  // ---------------------    Generate OTP, Ref Code, Send OTP & Ref Code to Email    ---------------------
+  const emailVerifyToken = await generateUUID();
+  const emailVerify_ExpireTime = Date.now() + 1 * 60 * 60 * 1000;
   ref_Code = await generateRefCode( firstName )
-  const expireTime = Date.now() + 1 * 60 * 60 * 1000;
-  // const sentEmail = await sendMail(`Your OTP is : ${otp}\nYour Referral Code is: ${ref_Code}`);
-  console.log('------- ref_ID : ' , ref_ID)
+  // const sentEmail = await sendMail(`Verify your Email here: http://127.0.0.1:5000/login-register/user/verify_Email/${ emailVerifyToken }\nYour Referral Code is: ${ref_Code}`);
+  console.log('------- emailVerifyToken : ' , emailVerifyToken)
   const user = await UserDB.create({
     userName,
     email,
@@ -61,15 +60,15 @@ export const userRegister = tryCatch(async (req, res) => {
     firstName,
     lastName,
     gender,
-    otp,
-    otp_ExpireTime: expireTime,
+    emailVerifyToken,
+    emailVerify_ExpireTime,
     ref_ID,
     ref_Code
   });
   
   
   // ---------------------    Remove password from response     ---------------------
-  const getUser = await UserDB.findOne({ _id: user._id }).select("-password");
+  const getUser = await UserDB.findOne({ _id: user._id }).select({ password: 0, otp: 0, otp_ExpireTime: 0, emailVerifyToken: 0, emailVerify_ExpireTime: 0 });
 
   res.status(200).json({ status: true, message: "Registered", data: getUser });
 });
@@ -91,23 +90,23 @@ export const userLogin = tryCatch(async (req, res) => {
   User = await UserDB.findOne({
     $or: [{ email: userName }, { userName: userName }, { phone_no: userName }],
   });
-  
   // ---------------------   Check User Exist     ---------------------
   if (!User) {
     return resStatus(400, res, 'Invalid Username or Password')
   }
 
-  
   // ---------------------    Compare Password     ---------------------
   const checkPass = await bcrypt.compare(password, User.password);
   if (!checkPass) {
     return resStatus(400, res, "Invalid Username or Password")
   }
 
-  // ---------------------    Check Role ID     ---------------------
-  const getRole = await RoleDB.findOne({ role_ID: User.role_ID });
-  if (!getRole) {
-    return resStatus(400, res, 'Invalid Role')
+  // ---------------------    Check verified Status     ---------------------
+  // if( !User.isVerified && ( User.otp_ExpireTime < Date.now() ){
+  //   return resStatus(400, res, "Please Verify Your Email")
+  // }
+  if(!User.isVerified && User.emailVerify_ExpireTime < Date.now()){
+    return resStatus(400, res, "Please Verify Your Email")
   }
 
   const loginMessage = User.isVerified ? "Logged in" : "Unverified Login"
@@ -123,32 +122,33 @@ export const userLogin = tryCatch(async (req, res) => {
       otp: undefined,
       password: undefined,
       otp_ExpireTime: undefined,
+      emailVerifyToken: undefined,
+      emailVerify_ExpireTime: undefined
       }
     }
   )
 });
 
-export const forgotPassword = tryCatch(async (req, res) => {
+export const sendPasswordOTP = tryCatch(async (req, res) => {
   const { email } = req.body;
-  const user = await UserDB.findOne({ email });
-  if (!user) {
-    return res.status(400).json({ status: false, message: "User not found" });
+  const User = await UserDB.findOne({ email });
+  
+  // ---------------------    Check Email     ---------------------
+  if (!User) {
+    return resStatus(400, res, "User not found")
   }
-
-  const otp = await generateOTP();
-  const expireTime = Date.now() + 1 * 60 * 1000;
-
-  user.otp = otp;
-  user.otp_ExpireTime = expireTime;
-  await user.save();
-  await sendMail(`Your OTP to reset Password is: ${otp}`)
-
-  const token = jwt.sign({
-      email: user.email,
-    },
-    "diwmaodimawodimwaodi",
-    { expireIn: "10m" }
-  );
+  
+  // ---------------------    Generate OTP & Send OTP to Email     ---------------------
+  User.otp = await generateOTP();
+  User.otp_ExpireTime = Date.now() + 1 * 60 * 1000;;
+  await User.save();
+  // await sendMail(`Your OTP to reset Password is: ${otp}`)
+  console.log(`-------Your OTP to reset Password is: ${User.otp}`)
+  
+  // ---------------------    Save Email to Browser Cookie     ---------------------
+  res.cookie('Login Token', {
+    email: User.email
+  }, { signed: true, maxAge: 10 * 60 * 1000, httpOnly: true} ) 
   return resStatus(200, res, `Email verify success, OTP sent to ${email} !`)
 });
 
@@ -196,10 +196,15 @@ export const changePassword = tryCatch(async (req, res) => {
 });
 
 export const otpVerify = tryCatch(async (req, res, next) => {
-  const { code } = req.body;
-  const user = await UserDB.findne({
-    email: req.email,
-    otp: code,
+  if(!req.signedCookies["Login Token"]){
+    return resStatus(400, res, "Invalid Token")
+  }
+  const { email } = req.signedCookies["Login Token"]
+  console.log('------- email : ' , email)
+  const { otp } = req.body;
+  const user = await UserDB.findOne({
+    email,
+    otp,
     otp_ExpireTime: { $gt: Date.now() },
   });
   if (!user) {
@@ -209,5 +214,6 @@ export const otpVerify = tryCatch(async (req, res, next) => {
   user.expireTime = undefined;
   await user.save();
 
+  res.clearCookie("Login Token");
   return resStatus(200, res, 'OTP verify successfully')
 });

@@ -74,6 +74,14 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    emailVerifyToken: {
+        type: String,
+        default: ''
+    },
+    emailVerify_ExpireTime: {
+        type: Date,
+        default: Date.now
+    },
     ref_ID: {
         type: String,
         default: "",

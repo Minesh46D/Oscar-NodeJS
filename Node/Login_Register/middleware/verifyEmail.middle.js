@@ -1,20 +1,17 @@
-import { JsonWebTokenError as jwt } from "jsonwebtoken"
-import { resStatus } from "../utilities/resStatus.util"
+import { UserDB } from "../models/user.model.js"
+import { resStatus } from "../utilities/resStatus.util.js"
 
-export const verifyEmail = ( req, res, next ) => {
-    const auth = req.get('Authorization')
+export const verifyEmail = async ( req, res, next ) => {
+    const { emailVerifyToken } = req.params
 
-    if(!auth){
-        return resStatus(401, res, 'Token required')
+    const User = await UserDB.findOne({ emailVerifyToken })
+    if(!User){
+        return resStatus( 400, res, "Invalid Email Verify Link" )
     }
-
-    const token = auth.split(" ")[1]
+    User.emailVerifyToken = undefined;
+    User.emailVerify_ExpireTime = undefined;
+    User.isVerified = true;
+    await User.save()
     
-    try {
-        const decoded = jwt.verify(token, 'diwmaodimawodimwaodi')
-        req.local.email = decoded.email
-        next()
-    } catch (error) {
-        return resStatus(401, res, 'Invalid OTP')
-    }
+    resStatus(200, res, "Email Verified Successfully")
 } 
