@@ -69,6 +69,21 @@ const userSchema = new Schema({
     otp_ExpireTime: {
         type: Date,
         default: Date.now
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    ref_ID: {
+        type: String,
+        default: "",
+        trim: true,
+        uppercase: true
+    },
+    ref_Code: {
+        type: String,
+        required: [true, 'ref_Code is required'],
+        unique: [true, "ref_Code is not unique"]
     }
 })
 export const UserDB = model('user', userSchema)

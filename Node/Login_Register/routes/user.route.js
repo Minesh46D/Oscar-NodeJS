@@ -9,8 +9,8 @@ const router = express.Router()
 
 // router.use('/api-docs', swaggerUI.serve);
 // router.get('/api-docs', swaggerUI.setup(swaggerDocument));
-router.post('/register', validationAsync( 'userSchema' ), userRegister)
-router.post('/login', userLogin)
+router.post('/register', validationAsync( 'registerSchema' ), userRegister)
+router.post('/login', validationAsync( 'loginSchema' ), userLogin)
 
 
 export default router

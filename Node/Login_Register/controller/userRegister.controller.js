@@ -6,11 +6,13 @@ import { RoleDB } from "../models/role.model.js";
 import { tryCatch } from "../utilities/tryCatch.util.js";
 import { resStatus } from "../utilities/resStatus.util.js";
 import { sendMail } from "../utilities/sendMail.util.js";
+import { generateRefCode } from "../utilities/generateRefCode.util.js";
 
 export const userRegister = tryCatch(async (req, res) => {
-  console.log('------- userRegister...')
-  const { userName, email, password, firstName, lastName, gender, phone_no, confirm_password } =
+  let ref_ID
+  const { userName, email, password, confirm_password, firstName, lastName, gender, phone_no } =
     req.body;
+    let { ref_Code } = req.body
   // ---------------------    Empty Field validation     ---------------------
   if ([userName, email, password, firstName, lastName, gender].some((field) => !field)){
     return resStatus(400, res, "All fields are required");
@@ -34,13 +36,23 @@ export const userRegister = tryCatch(async (req, res) => {
   if (!checkPass) {
     return resStatus(400, res, 'Password does not matchxxx')
   }
-
   
-  // ---------------------    Generate OTP     ---------------------
-  const otp = await generateOTP();
-  const expireTime = Date.now() + 1 * 60 * 60 * 1000;
-  const sentEmail = await sendMail(`Your OTP is : ${otp}`);
+  // ---------------------    Ref Code Check     ---------------------
+  if(ref_Code){
+    const refUser = await UserDB.findOne({ ref_Code })
+    if(!refUser ){
+      return resStatus(400, res, "Ref Code doesn't match")
+    }
+    ref_ID = refUser.userName
+  }
+  
 
+  // ---------------------    Generate OTP, Ref Code    ---------------------
+  const otp = await generateOTP();
+  ref_Code = await generateRefCode( firstName )
+  const expireTime = Date.now() + 1 * 60 * 60 * 1000;
+  // const sentEmail = await sendMail(`Your OTP is : ${otp}\nYour Referral Code is: ${ref_Code}`);
+  console.log('------- ref_ID : ' , ref_ID)
   const user = await UserDB.create({
     userName,
     email,
@@ -51,6 +63,8 @@ export const userRegister = tryCatch(async (req, res) => {
     gender,
     otp,
     otp_ExpireTime: expireTime,
+    ref_ID,
+    ref_Code
   });
   
   
@@ -77,19 +91,26 @@ export const userLogin = tryCatch(async (req, res) => {
   User = await UserDB.findOne({
     $or: [{ email: userName }, { userName: userName }, { phone_no: userName }],
   });
+  
+  // ---------------------   Check User Exist     ---------------------
   if (!User) {
     return resStatus(400, res, 'Invalid Username or Password')
   }
 
+  
+  // ---------------------    Compare Password     ---------------------
   const checkPass = await bcrypt.compare(password, User.password);
   if (!checkPass) {
     return resStatus(400, res, "Invalid Username or Password")
   }
 
+  // ---------------------    Check Role ID     ---------------------
   const getRole = await RoleDB.findOne({ role_ID: User.role_ID });
   if (!getRole) {
     return resStatus(400, res, 'Invalid Role')
   }
+
+  
 
   const token = jwt.sign(
     {
@@ -99,7 +120,9 @@ export const userLogin = tryCatch(async (req, res) => {
     "diwmaodimawodimwaodi",
     { expiresIn: "10h" }
   );
-  return resStatus(200, res, 'Logged in', {
+
+  const loginMessage = User.isVerified ? "Logged in" : "Unverified Login"
+  return resStatus(200, res, loginMessage, {
     data: {
       ...User._doc,
       otp: undefined,

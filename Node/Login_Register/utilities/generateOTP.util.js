@@ -8,9 +8,7 @@ export const generateOTP = async (  ) => {
     while(!isUnique){
         otp = crypto.randomInt(100000, 999999)
         const checkOTP = await UserDB.exists({otp})
-        if(!checkOTP){
-            isUnique = true
-        }
+        !checkOTP && (isUnique = true)
     }
     return otp
-} 
+}

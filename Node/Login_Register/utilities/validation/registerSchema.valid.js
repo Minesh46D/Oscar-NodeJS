@@ -18,7 +18,7 @@ const userError = {
     }
 }
 
-export const userSchema = Joi.object({
+export const registerSchema = Joi.object({
     userName: Joi.string()
         .required()
         .alphanum()
@@ -36,8 +36,6 @@ export const userSchema = Joi.object({
         .required()
         .valid(Joi.ref('password'))
         .error(userError.confirmPassword),
-    role_ID: Joi.number()
-        .max(20),
     phone_no: Joi.string()
         .pattern(/^[+]?[1-9]\d{1,14}$/) // Example pattern for international phone numbers
         .message(userError.phone_no),
@@ -49,5 +47,6 @@ export const userSchema = Joi.object({
         .max(12),
     gender: Joi.string()
         .valid('Male', 'Female', 'Others')
-        .messages(userError.gender)
+        .messages(userError.gender),
+    ref_Code: Joi.string()
 })
