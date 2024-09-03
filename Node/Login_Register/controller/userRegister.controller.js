@@ -110,18 +110,13 @@ export const userLogin = tryCatch(async (req, res) => {
     return resStatus(400, res, 'Invalid Role')
   }
 
-  
-
-  const token = jwt.sign(
-    {
-      email: User.email,
-      role: getRole.role_Name,
-    },
-    "diwmaodimawodimwaodi",
-    { expiresIn: "10h" }
-  );
-
   const loginMessage = User.isVerified ? "Logged in" : "Unverified Login"
+  
+  // ---------------------    Send Signed Cookie     ---------------------
+  res.cookie('Login Token', {
+    email: User.email,
+    role: getRole.role_Name
+  }, { signed: true, maxAge: 20 * 60 * 1000, httpOnly: true} )         // 20 min expire time
   return resStatus(200, res, loginMessage, {
     data: {
       ...User._doc,
@@ -129,8 +124,7 @@ export const userLogin = tryCatch(async (req, res) => {
       password: undefined,
       otp_ExpireTime: undefined,
       }
-    },
-    token
+    }
   )
 });
 

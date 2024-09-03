@@ -6,12 +6,15 @@ import multerRouter from './Multer/routes/index.route.js'
 import loginRouter from './Login_Register/routes/index.route.js'
 import { errorHandler } from './Login_Register/middleware/errorHandler.middle.js'
 import { resStatus } from './Login_Register/utilities/resStatus.util.js'
+import cookieParser from 'cookie-parser'
+
 dbConnect()
 app.listen(process.env.PORT, (  ) => console.log('------- server started at...', process.env.PORT) )
 
 
 app.use(express.json())
 app.use(express.static('uploads'))
+app.use(cookieParser(process.env.COOKIE_SECRET))
 // app.use('/product',express.static('uploads'))
 // http://localhost:5000/product/images/android.png
 // http://localhost:5000/android.png

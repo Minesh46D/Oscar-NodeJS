@@ -13,4 +13,15 @@ router.post('/register', validationAsync( 'registerSchema' ), userRegister)
 router.post('/login', validationAsync( 'loginSchema' ), userLogin)
 
 
+
+
+
+    
+// router.get('/get', ( req, res ) => {
+//     console.log('------- req.cookie : ' , req.signedCookies)
+//     res.clearCookie("Login Token");
+//     res.send('get')
+// } )
+
+
 export default router
