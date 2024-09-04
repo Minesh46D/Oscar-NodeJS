@@ -11,6 +11,7 @@ import { generateUUID } from "../utilities/generateUUID.util.js";
 
 export const userRegister = tryCatch(async (req, res) => {
   let ref_ID
+  let userWallet
   const { userName, email, password, confirm_password, firstName, lastName, gender, phone_no } =
     req.body;
     let { ref_Code } = req.body
@@ -37,13 +38,19 @@ export const userRegister = tryCatch(async (req, res) => {
     return resStatus(400, res, 'Password does not matchxxx')
   }
   
-  // ---------------------    Ref Code Check     ---------------------
+  // ---------------------    Ref Code Check, Wallet Bonus     ---------------------
   if(ref_Code){
     const refUser = await UserDB.findOne({ ref_Code })
     if(!refUser ){
       return resStatus(400, res, "Ref Code doesn't match")
     }
     ref_ID = refUser.userName
+    
+    // ---------------------    Wallet Bonus     ---------------------
+    refUser.wallet = ((+refUser.wallet) + 500.555).toFixed(3)
+    console.log('------- wallet : ' , refUser.wallet.toString())
+    await refUser.save()
+    userWallet = 1000;
   }
 
   // ---------------------    Generate OTP, Ref Code, Send OTP & Ref Code to Email    ---------------------
@@ -60,6 +67,7 @@ export const userRegister = tryCatch(async (req, res) => {
     firstName,
     lastName,
     gender,
+    wallet: userWallet,
     emailVerifyToken,
     emailVerify_ExpireTime,
     ref_ID,

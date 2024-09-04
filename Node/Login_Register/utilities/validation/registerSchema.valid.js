@@ -2,7 +2,7 @@ import Joi from 'joi'
 
 const userError = {
     userName: {
-        'any.required': 'Username is Empty',
+        'any.required': 'userName is Empty',
         'string.min': 'userName must be at least 3 letters',
         'string.max': 'userName must be less than 20 letters'
     },
@@ -49,4 +49,5 @@ export const registerSchema = Joi.object({
         .valid('Male', 'Female', 'Others')
         .messages(userError.gender),
     ref_Code: Joi.string()
+        .allow('')
 })

@@ -1,6 +1,6 @@
-import { model, Schema } from "mongoose"
+import { model, Schema, Types } from "mongoose"
 
-var validateEmail = function(password) {
+const validateEmail = function(password) {
     var re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return re.test(password)
 };
@@ -57,6 +57,10 @@ const userSchema = new Schema({
         required: [true,'gender is required'],
         trim: true,
         enum: ['Male', 'Female', 'Other']
+    },
+    wallet: {
+        type: Types.Decimal128,
+        default: 500.000
     },
     status: {
         type: Boolean,
