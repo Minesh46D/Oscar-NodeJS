@@ -156,7 +156,7 @@ export const sendPasswordOTP = tryCatch(async (req, res) => {
   console.log(`-------Your OTP to reset Password is: ${User.otp}`)
   
   // ---------------------    Save Email to Browser Cookie     ---------------------
-  res.cookie('Login Token', {
+  res.cookie('ForgotPassword Token', {
     email: User.email
   }, { signed: true, maxAge: 10 * 60 * 1000, httpOnly: true} ) 
   return resStatus(200, res, `Email verify success, OTP sent to ${email} !`)
@@ -206,10 +206,11 @@ export const changePassword = tryCatch(async (req, res) => {
 });
 
 export const otpVerify = tryCatch(async (req, res, next) => {
-  if(!req.signedCookies["Login Token"]){
+  const signedCookie = req.signedCookies["ForgotPassword Token"];
+  if(!signedCookie){
     return resStatus(400, res, "Invalid Token")
   }
-  const { email } = req.signedCookies["Login Token"]
+  const { email } = signedCookie
   console.log('------- email : ' , email)
   const { otp } = req.body;
   const user = await UserDB.findOne({
@@ -224,6 +225,6 @@ export const otpVerify = tryCatch(async (req, res, next) => {
   user.expireTime = undefined;
   await user.save();
 
-  res.clearCookie("Login Token");
+  res.clearCookie("ForgotPassword Token");
   return resStatus(200, res, 'OTP verify successfully')
 });
