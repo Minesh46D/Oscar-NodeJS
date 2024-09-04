@@ -24,10 +24,11 @@ router.post('/verify_otp', otpVerify)                                           
 
 
 // router.get('/get', async ( req, res ) => {
-    // console.log('------- UUID : ' , await generateUUID())
-    // console.log('------- req.cookie : ' , req.signedCookies)
-    // res.clearCookie("Login Token");
+//     console.log('------- UUID : ' , await generateUUID())
+//     console.log('------- req.cookie : ' , req.signedCookies)
+//     res.clearCookie("Login Token");
 //     res.send('get')
+//     resStatus(400, res)
 // } )
 
 

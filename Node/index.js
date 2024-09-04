@@ -5,7 +5,6 @@ import dbConnect from './db/dbConnect.js'
 import multerRouter from './Multer/routes/index.route.js'
 import loginRouter from './Login_Register/routes/index.route.js'
 import { errorHandler } from './Login_Register/middleware/errorHandler.middle.js'
-import { resStatus } from './Login_Register/utilities/resStatus.util.js'
 import cookieParser from 'cookie-parser'
 
 dbConnect()
