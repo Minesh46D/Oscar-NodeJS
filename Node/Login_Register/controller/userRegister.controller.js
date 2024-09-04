@@ -47,7 +47,8 @@ export const userRegister = tryCatch(async (req, res) => {
     ref_ID = refUser.userName
     
     // ---------------------    Wallet Bonus     ---------------------
-    refUser.wallet = ((+refUser.wallet) + 500.555).toFixed(3)
+    console.log('------- wallet : ' , refUser.wallet)
+    refUser.wallet = ((+refUser.wallet) + 500).toFixed(3)
     console.log('------- wallet : ' , refUser.wallet.toString())
     await refUser.save()
     userWallet = 1000;
