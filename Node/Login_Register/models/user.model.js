@@ -97,5 +97,5 @@ const userSchema = new Schema({
         required: [true, 'ref_Code is required'],
         unique: [true, "ref_Code is not unique"]
     }
-})
+}, { timestamps: true } )
 export const UserDB = model('user', userSchema)

@@ -8,6 +8,7 @@ import { resStatus } from "../utilities/resStatus.util.js";
 import { sendMail } from "../utilities/sendMail.util.js";
 import { generateRefCode } from "../utilities/generateRefCode.util.js";
 import { generateUUID } from "../utilities/generateUUID.util.js";
+import Decimal from 'decimal.js'
 
 export const userRegister = tryCatch(async (req, res) => {
   let ref_ID
@@ -45,11 +46,11 @@ export const userRegister = tryCatch(async (req, res) => {
       return resStatus(400, res, "Ref Code doesn't match")
     }
     ref_ID = refUser.userName
-    
     // ---------------------    Wallet Bonus     ---------------------
-    console.log('------- wallet : ' , refUser.wallet)
-    refUser.wallet = ((+refUser.wallet) + 500).toFixed(3)
-    console.log('------- wallet : ' , refUser.wallet.toString())
+    
+    const value = new Decimal(refUser.wallet.toString())
+    // refUser.wallet = ((+refUser.wallet) + 500).toFixed(3)
+    refUser.wallet = value.add(500).toFixed(4)
     await refUser.save()
     userWallet = 1000;
   }
