@@ -1,0 +1,15 @@
+{
+  "files.exclude": {
+    "Node JS Topics & Tasks Report.pdf": true,
+    "tailwind.config.js": true,
+    ".gitignore": true,
+    "Node/.env": true,
+    "Node/.gitignore": true,
+    "Node/.vscode": true,
+    "Node/node_modules": true,
+    "Node/package-lock.json": true,
+    "Node/package.json": true,
+    "Node\\package-lock.json": true,
+    "Node\\index.js": true
+  }
+}

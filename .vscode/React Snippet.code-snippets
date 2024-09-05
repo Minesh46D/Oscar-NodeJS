@@ -39,5 +39,10 @@
 		"prefix": ["cmt"],
 		"scope": "javascript",
 		"body": ["// ---------------------    ${1}     ---------------------\n${0}"]
+	},
+	"space" : {
+		"prefix": [" "],
+		"scope": "javascript",
+		"body": [" ${0} "]
 	}
 }
