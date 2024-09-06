@@ -32,7 +32,7 @@ export const registerSchema = Joi.object({
         .required()
         .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)
         .messages(userError.password),
-    confirm_password: Joi.string()
+    confirmPassword: Joi.string()
         .required()
         .valid(Joi.ref('password'))
         .error(userError.confirmPassword),

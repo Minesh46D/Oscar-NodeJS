@@ -13,7 +13,7 @@ import Decimal from 'decimal.js'
 export const userRegister = tryCatch(async (req, res) => {
   let ref_ID
   let userWallet
-  const { userName, email, password, confirm_password, firstName, lastName, gender, phone_no } =
+  const { userName, email, password, confirmPassword, firstName, lastName, gender, phone_no } =
     req.body;
     let { ref_Code } = req.body
   // ---------------------    Empty Field validation     ---------------------
@@ -34,7 +34,7 @@ export const userRegister = tryCatch(async (req, res) => {
 
   // ---------------------    Confirm Password Check     ---------------------
   const hashPassword = await bcrypt.hash(password, 10);
-  const checkPass = await bcrypt.compare( confirm_password, hashPassword );
+  const checkPass = await bcrypt.compare( confirmPassword, hashPassword );
   if (!checkPass) {
     return resStatus(400, res, 'Password does not matchxxx')
   }
@@ -162,33 +162,23 @@ export const sendPasswordOTP = tryCatch(async (req, res) => {
 });
 
 export const changePassword = tryCatch(async (req, res) => {
-  const loginCookie = req.signedCookies["Login Token"]
-  const forgotPasswordCookie = req.signedCookie["ForgotPassword Token"]
-  if(!loginCookie && !forgotPasswordCookie){
-    return resStatus(400, res, "Token Invalid")
-  }
-
   const { oldPassword, newPassword, confirmPassword } = req.body;
-  const { email } = loginCookie || forgotPasswordCookie
-  const fields = [ newPassword, confirmPassword, email]
-  loginCookie && fields.push( oldPassword )
-  const updateMessage = ""
-
-  if ([fields].some((item) => !item)) {
+  const { email } = req.local
+  const fields = [ newPassword, confirmPassword, email ]
+  req.local.role && fields.push( oldPassword )
+  // ---------------------    Empty Field Validation     ---------------------
+  if (fields.some((item) => !item)) {
     return resStatus(400, res, "All field are required")
   }
-
   const user = await UserDB.findOne({ email });
   const hashPassword = await bcrypt.hash(newPassword, 10);
-  const checkBothPassword = await bcrypt.compare(confirmPassword, hashPassword);
   // ---------------------    Confirm Password     ---------------------
+  const checkBothPassword = await bcrypt.compare(confirmPassword, hashPassword);
   if (!checkBothPassword) {
-    return res.status(400).json({
-      status: false,
-      message: "New Password can not be same as old password",
-    });
+    return resStatus(400, res, "New Password and Confirm Password doesn't match")
   }
   // ---------------------    Check Old Password     ---------------------
+  let updateMessage = ""
   if(oldPassword){
     const checkOldPassword = await bcrypt.compare(oldPassword, user.password);
     if (!checkOldPassword) {
@@ -196,7 +186,7 @@ export const changePassword = tryCatch(async (req, res) => {
     }
     updateMessage = 'Password Updated!!'
   }
-  const checkOldPassword = bcrypt.compare(newPassword, user.password)
+  const checkOldPassword = await bcrypt.compare(newPassword, user.password)
   if(checkOldPassword){
     return resStatus(400, res, 'New Password can not be the same as old password')
   }
@@ -205,15 +195,13 @@ export const changePassword = tryCatch(async (req, res) => {
     { _id: user._id },
     { $set: { password: hashPassword } }
   );
+  res.clearCookie('ForgotPassword Token')
+  res.clearCookie('Login Token')
   return resStatus(200, res, updateMessage || "password Changed")
 });
 
 export const otpVerify = tryCatch(async (req, res, next) => {
-  const signedCookie = req.signedCookies["ForgotPassword Token"];
-  if(!signedCookie){
-    return resStatus(400, res, "Invalid Token")
-  }
-  const { email } = signedCookie
+  const { email } = req.local
   console.log('------- email : ' , email)
   const { otp } = req.body;
   const user = await UserDB.findOne({
@@ -231,7 +219,7 @@ export const otpVerify = tryCatch(async (req, res, next) => {
   return resStatus(200, res, 'OTP verify successfully')
 });
 
-export const verifyEmail = async ( req, res ) => {
+export const verifyEmail = tryCatch( async ( req, res ) => {
   const { emailVerifyToken } = req.params
 
   const User = await UserDB.findOne({ emailVerifyToken, emailVerify_ExpireTime: { $gt: Date.now() } })
@@ -244,9 +232,9 @@ export const verifyEmail = async ( req, res ) => {
   await User.save()
   
   resStatus(200, res, "Email Verified Successfully")
-} 
+} ) 
 
-export const resentEmail = tryCatch(async ( req, res ) => {
+export const resendEmail = tryCatch(async ( req, res ) => {
   const { email } = req.signedCookies["Login Token"] || req.body
   
   // ---------------------    Check if User is logged in or have email in body    ---------------------
@@ -260,7 +248,7 @@ export const resentEmail = tryCatch(async ( req, res ) => {
   if(User.isVerified){
     return resStatus(400, res,'Email is already verified')
   }
-  
+
   // ---------------------    Generate New Email Token and send to Email     ---------------------
   const emailVerifyToken = await generateUUID();
   const emailVerify_ExpireTime = Date.now() + 1 * 60 * 60 * 1000;
@@ -270,5 +258,5 @@ export const resentEmail = tryCatch(async ( req, res ) => {
   User.emailVerifyToken = emailVerifyToken;
   User.emailVerify_ExpireTime = emailVerify_ExpireTime
   await User.save()
-  return resStatus(200, res, `Email Sent Successfully, ${ email } `)
+  return resStatus(200, res, `Email Sent Successfully to ${ email } `)
 } )
