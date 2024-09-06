@@ -104,17 +104,16 @@ export const userLogin = tryCatch(async (req, res) => {
   if (!User) {
     return resStatus(400, res, 'Invalid Username or Password')
   }
-
   // ---------------------    Compare Password     ---------------------
   const checkPass = await bcrypt.compare(password, User.password);
   if (!checkPass) {
     return resStatus(400, res, "Invalid Username or Password")
   }
-
+  const getRole = await RoleDB.findOne({ role_ID: User.role_ID })
+  if(!getRole){
+    return resStatus(400, res, "Role not found")
+  }
   // ---------------------    Check verified Status     ---------------------
-  // if( !User.isVerified && ( User.otp_ExpireTime < Date.now() ){
-  //   return resStatus(400, res, "Please Verify Your Email")
-  // }
   if(!User.isVerified && User.emailVerify_ExpireTime < Date.now()){
     return resStatus(400, res, "Please Verify Your Email")
   }
@@ -163,46 +162,50 @@ export const sendPasswordOTP = tryCatch(async (req, res) => {
 });
 
 export const changePassword = tryCatch(async (req, res) => {
+  const loginCookie = req.signedCookies["Login Token"]
+  const forgotPasswordCookie = req.signedCookie["ForgotPassword Token"]
+  if(!loginCookie && !forgotPasswordCookie){
+    return resStatus(400, res, "Token Invalid")
+  }
+
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  const { email } = loginCookie || forgotPasswordCookie
+  const fields = [ newPassword, confirmPassword, email]
+  loginCookie && fields.push( oldPassword )
   const updateMessage = ""
-  const { oldPassword, newPassword, confirmPassword, email } = req.body;
-  if ([oldPassword, newPassword, confirmPassword, email].some((item) => !item)) {
-    return res
-      .status(400)
-      .json({ status: false, message: "All field are required" });
+
+  if ([fields].some((item) => !item)) {
+    return resStatus(400, res, "All field are required")
   }
 
   const user = await UserDB.findOne({ email });
-
   const hashPassword = await bcrypt.hash(newPassword, 10);
-
   const checkBothPassword = await bcrypt.compare(confirmPassword, hashPassword);
+  // ---------------------    Confirm Password     ---------------------
   if (!checkBothPassword) {
     return res.status(400).json({
       status: false,
       message: "New Password can not be same as old password",
     });
   }
-
-  
-  // ---------------------    Change Password     ---------------------
+  // ---------------------    Check Old Password     ---------------------
   if(oldPassword){
-    updateMessage = 'Password Updated!!'
     const checkOldPassword = await bcrypt.compare(oldPassword, user.password);
     if (!checkOldPassword) {
       return resStatus(400, res, 'Old password is not the same')
     }
+    updateMessage = 'Password Updated!!'
   }
   const checkOldPassword = bcrypt.compare(newPassword, user.password)
   if(checkOldPassword){
     return resStatus(400, res, 'New Password can not be the same as old password')
   }
-
+  // ---------------------    Update     ---------------------
   await UserDB.updateOne(
     { _id: user._id },
     { $set: { password: hashPassword } }
   );
-
-  return resStatus(200, res, updateMessage || "password updated")
+  return resStatus(200, res, updateMessage || "password Changed")
 });
 
 export const otpVerify = tryCatch(async (req, res, next) => {
@@ -225,6 +228,47 @@ export const otpVerify = tryCatch(async (req, res, next) => {
   user.expireTime = undefined;
   await user.save();
 
-  res.clearCookie("ForgotPassword Token");
   return resStatus(200, res, 'OTP verify successfully')
 });
+
+export const verifyEmail = async ( req, res ) => {
+  const { emailVerifyToken } = req.params
+
+  const User = await UserDB.findOne({ emailVerifyToken, emailVerify_ExpireTime: { $gt: Date.now() } })
+  if(!User){
+      return resStatus( 400, res, "Invalid Email Verify Link" )
+  }
+  User.emailVerifyToken = undefined;
+  User.emailVerify_ExpireTime = undefined;
+  User.isVerified = true;
+  await User.save()
+  
+  resStatus(200, res, "Email Verified Successfully")
+} 
+
+export const resentEmail = tryCatch(async ( req, res ) => {
+  const { email } = req.signedCookies["Login Token"] || req.body
+  
+  // ---------------------    Check if User is logged in or have email in body    ---------------------
+  if(!email){
+    return resStatus(400, res, 'something went wrong')
+  }
+  const User = await UserDB.findOne({ email })
+  if(!User){
+    return resStatus(400, res,'Email is invalid')
+  }
+  if(User.isVerified){
+    return resStatus(400, res,'Email is already verified')
+  }
+  
+  // ---------------------    Generate New Email Token and send to Email     ---------------------
+  const emailVerifyToken = await generateUUID();
+  const emailVerify_ExpireTime = Date.now() + 1 * 60 * 60 * 1000;
+  // const sentEmail = await sendMail(  email ,`Verify your Email here: http://127.0.0.1:5000/login-register/user/verify_Email/${ emailVerifyToken }\nYour Referral Code is: ${ref_Code}`);
+  console.log('------- emailVerifyToken : ' , emailVerifyToken)
+
+  User.emailVerifyToken = emailVerifyToken;
+  User.emailVerify_ExpireTime = emailVerify_ExpireTime
+  await User.save()
+  return resStatus(200, res, `Email Sent Successfully, ${ email } `)
+} )

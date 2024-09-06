@@ -1,7 +1,7 @@
 import nodeMailer from 'nodemailer'
 import 'dotenv/config'
 
-export const sendMail = async ( message = null ) => {
+export const sendMail = async ( to = "minesh46patel@gmail.com", message = null ) => {
     const transporter = nodeMailer.createTransport({
         service: 'gmail',
         auth: {
