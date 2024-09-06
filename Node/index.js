@@ -1,16 +1,15 @@
 import express from 'express'
 const app = express()
 import 'dotenv/config'
-import dbConnect from './db/dbConnect.js'
-// import mysqlConnect from './mysql/db/mysqlConnect.js'
+// import dbConnect from './db/dbConnect.js'
+import './mysql/db/mysqlConnect.js'
 import multerRouter from './Multer/routes/index.route.js'
 import loginRouter from './Login_Register/routes/index.route.js'
 import { errorHandler } from './Login_Register/middleware/errorHandler.middle.js'
 import cookieParser from 'cookie-parser'
 // import sqlRouter from './mysql/routes/index.route.js'
 
-dbConnect()
-// mysqlConnect.connect()
+// dbConnect()
 app.listen(process.env.PORT, (  ) => console.log('------- server started at...', process.env.PORT) )
 
 

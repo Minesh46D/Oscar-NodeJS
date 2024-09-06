@@ -1,25 +1,17 @@
-import mysql from 'mysql2'
+import { Sequelize } from "sequelize";
 
-const dbName = 'node'
-
-const con = mysql.createConnection({
+const sequelize = new Sequelize( 'node', 'root', '', {
     host: 'localhost',
-    user: 'root',
-})
+    dialect: 'mysql'
+} );
 
-con.connect(( error ) => {
-    if( error ) throw error;
-    console.log('------- SQL Connected...')
-    con.query("SHOW DATABASES", ( err, result ) => {
-        if( err ) throw err;
-        if(!result.some(( item ) => item['Database'] === dbName )){
-            con.query(`CREATE DATABASE ${dbName}`, ( err, result ) => {
-                console.log(`------- Database ${dbName} created...`)
-                if( err ) throw err;
-            })
+(async ( ) => {
+    try {
+        await sequelize.authenticate();
+        console.log('Connection has been established successfully.');
+        } catch (error) {
+        console.error('Unable to connect to the database:', error);
         }
-        con.query(`USE ${dbName}`)
-    } )
-} )
+})();
 
-export default con
+export default sequelize
