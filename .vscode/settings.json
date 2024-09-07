@@ -16,6 +16,7 @@
     "Node/node_modules": true,
     "Node/package-lock.json": true,
     "Node/package.json": true,
-    "Node\\.vscode": true
+    "Node\\.vscode": true,
+    "Oscar-Node-Project": true
   }
 }

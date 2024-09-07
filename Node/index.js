@@ -7,6 +7,7 @@ import multerRouter from './Multer/routes/index.route.js'
 import loginRouter from './Login_Register/routes/index.route.js'
 import { errorHandler } from './Login_Register/middleware/errorHandler.middle.js'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 // import sqlRouter from './mysql/routes/index.route.js'
 
 dbConnect()
@@ -16,6 +17,7 @@ app.listen(process.env.PORT, (  ) => console.log('------- server started at...',
 app.use(express.json())
 app.use(express.static('uploads'))
 app.use(cookieParser(process.env.COOKIE_SECRET))
+app.use(cors())
 // app.use('/product',express.static('uploads'))
 // http://localhost:5000/product/images/android.png
 // http://localhost:5000/android.png

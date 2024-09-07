@@ -25,10 +25,10 @@ router.post('/change_password', tokenCheck( 'Login Token' ), validationAsync( 'p
 
 
 
-// router.get('/get', tokenCheck('Login Token') ,async ( req, res ) => {
+router.get('/get', tokenCheck('Login Token') ,async ( req, res ) => {
 
-//     res.send('get')
-// } )
+    res.send('get')
+} )
 
 
 // res.clearCookie("Login Token");
