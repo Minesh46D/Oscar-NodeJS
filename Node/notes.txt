@@ -1,0 +1,32 @@
+Aggregation Pipeline - [
+  {
+    '$set': {
+      '_id': {
+        '$toString': '$_id'
+      }
+    }
+  }, {
+    '$lookup': {
+      'from': 'orders', 
+      'localField': '_id', 
+      'foreignField': 'userId', 
+      'as': 'result'
+    }
+  }, {
+    '$project': {
+      'userName': 1, 
+      'mobile': 1, 
+      'email': 1, 
+      'gender': 1, 
+      'result': 1
+    }
+  }, {
+    '$unwind': {
+      'path': '$result'
+    }
+  }, {
+    '$unwind': {
+      'path': '$result.orderProducts'
+    }
+  }
+]
