@@ -6,6 +6,8 @@ import swaggerDocument from '../utilities/Swagger.json' assert { type: "json" }
 import { resStatus } from '../utilities/resStatus.util.js'
 import { generateUUID } from '../utilities/generateUUID.util.js'
 import { tokenCheck } from '../middleware/tokenCheck.middle.js'
+import { testDB } from '../models/test.model.js'
+import { tryCatch } from '../utilities/tryCatch.util.js'
 
 const router = express.Router()
 
@@ -25,10 +27,10 @@ router.post('/change_password', tokenCheck( 'Login Token' ), validationAsync( 'p
 
 
 
-router.get('/get', tokenCheck('Login Token') ,async ( req, res ) => {
-
-    res.send('get')
-} )
+// router.get('/get', tryCatch(async ( req, res ) => {
+//     await testDB.create(req.body)
+//     res.send('get')
+// }) )
 
 
 // res.clearCookie("Login Token");

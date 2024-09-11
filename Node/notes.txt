@@ -28,5 +28,10 @@ Aggregation Pipeline - [
     '$unwind': {
       'path': '$result.orderProducts'
     }
+  }, {
+    $project: {
+         item: 1,
+         numberOfColors: { $cond: { if: { $isArray: "$colors" }, then: { $size: "$colors" }, else: "NA"} }
+      }
   }
 ]

@@ -1,5 +1,16 @@
 import { model, Schema, Types } from "mongoose";
 
+const orderItemSchema = new Schema({
+    product_ID: {
+        type: Types.ObjectId,
+        ref: "Product",
+        required: [ true, 'product_ID is required' ]
+    },
+    quantity: {
+        type: Number,
+        required: [ true, 'quantity is required' ]
+    }
+})
 
 const orderSchema = new Schema({
     customer_ID:{
@@ -7,9 +18,8 @@ const orderSchema = new Schema({
         ref: "Users",
         required: [ true, 'customer_ID is required' ]
     },
-    cart_ID: {
-        type: Types.ObjectId,
-        ref: "Carts"
+    orderItems: {
+        type: [ orderItemSchema ]
     },
     orderAddress: {
         type: String,
@@ -21,13 +31,17 @@ const orderSchema = new Schema({
     },
     orderStatus: {
         type: String,
-        default: "PENDING",
-        enum: [ "PENDING", "CANCELLED", "DELIVERED" ]
+        default: "DISPATCHED",
+        enum: [ "DISPATCHED", "CANCELLED", "DELIVERED" ]
     },
-    orderPaid: {
-        type: Boolean,
-        default: false
+    orderDate: {
+        type: Date,
+        default: Date.now
+    },
+    deliveryDate: {
+        type: Date,
+        required: [ function(){ return this.orderStatus === "DELIVERED" }, "deliveryDate is required" ]
     }
-}, { timestamps: true } )
+} )
 
 export const OrderDB = model( 'Orders', orderSchema )
