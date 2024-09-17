@@ -32,7 +32,7 @@ const userSchema = new Schema({
     role_ID: {
         type: Number,
         ref: 'Role',
-        default: 3,
+        default: 5,
         max: [20, 'role_ID is invalid']
     },
     phone_no: {
@@ -68,11 +68,11 @@ const userSchema = new Schema({
     },
     otp: {
         type: Number,
-        default: 0
+        default: undefined
     },
     otp_ExpireTime: {
         type: Date,
-        default: Date.now
+        required: [ function(){ return this.otp !== undefined }, 'otp_ExpireTime is required' ]
     },
     isVerified: {
         type: Boolean,
@@ -80,15 +80,15 @@ const userSchema = new Schema({
     },
     emailVerifyToken: {
         type: String,
-        default: ''
+        default: undefined
     },
     emailVerify_ExpireTime: {
         type: Date,
-        default: Date.now
+        required: [ function(){ return this.emailVerifyToken !== undefined }, 'emailVerify_ExpireTime is required' ]
     },
     ref_ID: {
         type: String,
-        default: "",
+        default: undefined,
         trim: true,
         uppercase: true
     },
