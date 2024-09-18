@@ -260,3 +260,15 @@ export const resendEmail = tryCatch(async ( req, res ) => {
   await User.save()
   return resStatus(200, res, `Email Sent Successfully to ${ email } `)
 } )
+export const checkUser = tryCatch( async ( req, res ) => {
+  const { userName } = req.body
+  if(!userName){
+    return resStatus(400, res, 'userName not found')
+  }
+  const User = await UserDB.exists({ userName })
+  if(!User){
+    return resStatus(200, res)
+  }
+
+  return resStatus(400, res, 'userName already exists' )
+}  );
