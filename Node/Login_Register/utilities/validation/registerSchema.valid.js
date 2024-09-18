@@ -14,6 +14,7 @@ const userError = {
         'string.pattern.base': 'Phone number must be a valid international phone number format, e.g., +1234567890.'
     },
     gender: {
+        'any.required': 'Gender is required',
         'string.valid': 'Gender must be one of the following: Male, Female, or Others.'
     }
 }
@@ -46,6 +47,7 @@ export const registerSchema = Joi.object({
         .required()
         .max(12),
     gender: Joi.string()
+        .required()
         .valid('Male', 'Female', 'Others')
         .messages(userError.gender),
     ref_Code: Joi.string()

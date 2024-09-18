@@ -56,7 +56,7 @@ const userSchema = new Schema({
         type: String,
         required: [true,'gender is required'],
         trim: true,
-        enum: ['Male', 'Female', 'Other']
+        enum: ['Male', 'Female', 'Others']
     },
     wallet: {
         type: Types.Decimal128,
