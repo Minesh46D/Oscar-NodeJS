@@ -272,3 +272,15 @@ export const checkUser = tryCatch( async ( req, res ) => {
 
   return resStatus(400, res, 'userName already exists' )
 }  );
+export const checkEmail = tryCatch( async ( req, res ) => {
+  const { email } = req.body
+  if(!email){
+    return resStatus(400, res, 'email not found')
+  }
+  const User = await UserDB.exists({ email })
+  if(!User){
+    return resStatus(200, res)
+  }
+
+  return resStatus(409, res, 'email already exists' )
+}  );

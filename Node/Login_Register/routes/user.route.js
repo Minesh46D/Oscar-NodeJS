@@ -1,5 +1,5 @@
 import express from 'express'
-import { changePassword, checkUser, otpVerify, resendEmail, sendPasswordOTP, userLogin, userRegister, verifyEmail } from '../controller/userRegister.controller.js'
+import { changePassword, checkEmail, checkUser, otpVerify, resendEmail, sendPasswordOTP, userLogin, userRegister, verifyEmail } from '../controller/userRegister.controller.js'
 import { validationAsync } from '../utilities/validationAsync.js'
 import swaggerUI from 'swagger-ui-express'
 import swaggerDocument from '../utilities/Swagger.json' assert { type: "json" }
@@ -18,7 +18,8 @@ router.post('/register', validationAsync( 'registerSchema' ), userRegister)     
 router.post('/login', userLogin)                                                     // done
 router.post('/verify_Email/:emailVerifyToken', verifyEmail)                          // done
 router.post('/resendEmailVerify', resendEmail)                                       // done
-router.post('/checkUser', checkUser)
+router.post('/checkUser', checkUser)                                                 // done
+router.post('/checkEmail', checkEmail)                                                 // done
 
 router.post('/forgot_password', validationAsync( 'emailSchema' ), sendPasswordOTP)   // done
 router.post('/verify_otp', tokenCheck( 'ForgotPassword Token'  ), otpVerify)         // done                                      // done
