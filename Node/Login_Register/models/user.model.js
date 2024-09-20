@@ -19,7 +19,7 @@ const userSchema = new Schema({
         lowercase: true,
         trim: true,
         minLength: [6, 'email is not valid length'],
-        maxLength: [12, 'email is not valid length'],
+        maxLength: [30, 'email is not valid length'],
         match: [/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, 'email is invalid']
     },
     password: {
