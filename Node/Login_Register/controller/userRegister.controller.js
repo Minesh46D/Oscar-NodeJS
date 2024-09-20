@@ -23,9 +23,8 @@ export const userRegister = tryCatch(async (req, res) => {
   
   // ---------------------    User Already Exist     ---------------------
   const checkUser = await UserDB.exists({
-    $or: [{ email }, { phone_no }, { userName }],
+    $or: phone_no ? [{ email }, { phone_no }, { userName }] : [{ email }, { userName }],
   });
-  
   if (checkUser) {
     return res
       .status(400)
