@@ -9,6 +9,7 @@ import { sendMail } from "../utilities/sendMail.util.js";
 import { generateRefCode } from "../utilities/generateRefCode.util.js";
 import { generateUUID } from "../utilities/generateUUID.util.js";
 import Decimal from 'decimal.js'
+import { checkFields } from "../utilities/checkFields.js";
 
 export const userRegister = tryCatch(async (req, res) => {
   let ref_ID
@@ -17,9 +18,7 @@ export const userRegister = tryCatch(async (req, res) => {
     req.body;
     let { ref_Code } = req.body
   // ---------------------    Empty Field validation     ---------------------
-  if ([userName, email, password, firstName, lastName, gender].some((field) => !field)){
-    return resStatus(400, res, "All fields are required");
-  }
+  checkFields( res, userName, email, password, firstName, lastName, gender );
   
   // ---------------------    User Already Exist     ---------------------
   const checkUser = await UserDB.exists({
@@ -60,7 +59,7 @@ export const userRegister = tryCatch(async (req, res) => {
   ref_Code = await generateRefCode( firstName )
   // const sentEmail = await sendMail(`Verify your Email here: http://127.0.0.1:5000/login-register/user/verify_Email/${ emailVerifyToken }\nYour Referral Code is: ${ref_Code}`);
   console.log('------- emailVerifyToken : ' , emailVerifyToken)
-  const user = await UserDB.create({
+  await UserDB.create({
     userName,
     email,
     password: hashPassword,
@@ -84,9 +83,7 @@ export const userRegister = tryCatch(async (req, res) => {
 
 export const userLogin = tryCatch(async (req, res) => {
   const { userName, password } = req.body;
-  if ([userName, password].some((item) => !item)) {
-    return resStatus(400, res, "All Field are required")
-  }
+  checkFields( res, userName, password );
 
   let User;
   // if (typeof uesr === "number") {
@@ -108,7 +105,9 @@ export const userLogin = tryCatch(async (req, res) => {
   if (!checkPass) {
     return resStatus(400, res, "Invalid Username or Password")
   }
+  // ----------------------------------    Check Role     ----------------------------------
   const getRole = await RoleDB.findOne({ role_ID: User.role_ID })
+  console.log('------- User : ' , User)
   if(!getRole){
     return resStatus(400, res, "Role not found")
   }
@@ -120,10 +119,12 @@ export const userLogin = tryCatch(async (req, res) => {
   const loginMessage = User.isVerified ? "Logged in" : "Unverified Login"
   
   // ---------------------    Send Signed Cookie     ---------------------
-  res.cookie('Login Token', {
+  const loginToken = jwt.sign({
     email: User.email,
     role: getRole.role_Name
-  }, { signed: true, maxAge: 20 * 60 * 1000, httpOnly: true} )         // 20 min expire time
+  }, 'nodeTokenExampleKey')
+
+  res.cookie('Login Token', loginToken, { signed: true, maxAge: 20 * 60 * 1000, httpOnly: true} )         // 20 min expire time
   return resStatus(200, res, loginMessage, {
     data: {
       ...User._doc,
@@ -136,6 +137,11 @@ export const userLogin = tryCatch(async (req, res) => {
     }
   )
 });
+
+export const userLogout = tryCatch( async ( req, res ) => {
+  res.clearCookie('Login Token')
+  resStatus( 200, res, 'Login Success' )
+}  );  
 
 export const sendPasswordOTP = tryCatch(async (req, res) => {
   const { email } = req.body;
@@ -166,9 +172,8 @@ export const changePassword = tryCatch(async (req, res) => {
   const fields = [ newPassword, confirmPassword, email ]
   req.local.role && fields.push( oldPassword )
   // ---------------------    Empty Field Validation     ---------------------
-  if (fields.some((item) => !item)) {
-    return resStatus(400, res, "All field are required")
-  }
+  checkFields( res, ...fields );
+  
   const user = await UserDB.findOne({ email });
   const hashPassword = await bcrypt.hash(newPassword, 10);
   // ---------------------    Confirm Password     ---------------------

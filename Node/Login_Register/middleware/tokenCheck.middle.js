@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken"
 import { resStatus } from "../utilities/resStatus.util.js"
 
 export const tokenCheck = ( tokenName ) => ( req, res, next ) => {
@@ -5,7 +6,14 @@ export const tokenCheck = ( tokenName ) => ( req, res, next ) => {
     if(!signedCookie){
         return resStatus(400, res, "Invalid Token")
     }
-    req.local = signedCookie
+    let decoded = ''
+    try {
+        decoded = jwt.verify( signedCookie, 'nodeTokenExampleKey' )
+    } catch (error) {
+        console.log('------- token error : ' , error)
+        return resStatus(400, res, "Invalid jwt Token")             // TODO delete jwt
+    }
+    req.local = decoded
     next()
     
 } 
