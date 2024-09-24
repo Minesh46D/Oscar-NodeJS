@@ -28,10 +28,12 @@ export const registerSchema = Joi.object({
         .messages(userError.userName),
     email: Joi.string()
         .required()
+        .max(30)
         .email({ minDomainSegments: 2, tlds: { allow: ['com' , 'co' , 'net'], deny: ['org'] } }),
     password: Joi.string()
         .required()
         .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)
+        .max(30)
         .messages(userError.password),
     confirmPassword: Joi.string()
         .required()

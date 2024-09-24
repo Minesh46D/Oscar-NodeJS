@@ -59,7 +59,7 @@ export const userRegister = tryCatch(async (req, res) => {
   ref_Code = await generateRefCode( firstName )
   // const sentEmail = await sendMail(`Verify your Email here: http://127.0.0.1:5000/login-register/user/verify_Email/${ emailVerifyToken }\nYour Referral Code is: ${ref_Code}`);
   console.log('------- emailVerifyToken : ' , emailVerifyToken)
-  await UserDB.create({
+  const user = await UserDB.create({
     userName,
     email,
     password: hashPassword,
@@ -125,6 +125,7 @@ export const userLogin = tryCatch(async (req, res) => {
   }, 'nodeTokenExampleKey')
 
   res.cookie('Login Token', loginToken, { signed: true, maxAge: 20 * 60 * 1000, httpOnly: true} )         // 20 min expire time
+  res.cookie('Login Check', { loggedIn: true }, { maxAge: 20 * 60 * 1000, httpOnly: false, path: '/' })
   return resStatus(200, res, loginMessage, {
     data: {
       ...User._doc,
@@ -140,7 +141,7 @@ export const userLogin = tryCatch(async (req, res) => {
 
 export const userLogout = tryCatch( async ( req, res ) => {
   res.clearCookie('Login Token')
-  resStatus( 200, res, 'Login Success' )
+  resStatus( 200, res, null, 'Logout Success' )
 }  );  
 
 export const sendPasswordOTP = tryCatch(async (req, res) => {
@@ -243,7 +244,7 @@ export const resendEmail = tryCatch(async ( req, res ) => {
   
   // ---------------------    Check if User is logged in or have email in body    ---------------------
   if(!email){
-    return resStatus(400, res, 'something went wrong')
+    return resStatus(400, res, 'email required')
   }
   const User = await UserDB.findOne({ email })
   if(!User){
