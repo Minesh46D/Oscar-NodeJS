@@ -107,7 +107,6 @@ export const userLogin = tryCatch(async (req, res) => {
   }
   // ----------------------------------    Check Role     ----------------------------------
   const getRole = await RoleDB.findOne({ role_ID: User.role_ID })
-  console.log('------- User : ' , User)
   if(!getRole){
     return resStatus(400, res, "Role not found")
   }
@@ -116,7 +115,7 @@ export const userLogin = tryCatch(async (req, res) => {
     return resStatus(400, res, "Please Verify Your Email")
   }
 
-  const loginMessage = User.isVerified ? "Logged in" : "Unverified Login"
+  const loginMessage = User.isVerified ? "Verified Login" : "Unverified Login"
   
   // ---------------------    Send Signed Cookie     ---------------------
   const loginToken = jwt.sign({
@@ -125,8 +124,7 @@ export const userLogin = tryCatch(async (req, res) => {
   }, 'nodeTokenExampleKey')
 
   res.cookie('Login Token', loginToken, { signed: true, maxAge: 20 * 60 * 1000, httpOnly: true} )         // 20 min expire time
-  res.cookie('Login Check', { loggedIn: true }, { maxAge: 20 * 60 * 1000, httpOnly: false, path: '/' })
-  return resStatus(200, res, loginMessage, {
+  return resStatus(200, res, null, loginMessage, {
     data: {
       ...User._doc,
       otp: undefined,
