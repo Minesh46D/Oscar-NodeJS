@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const RoleDB = require('../model/role.Schema')
 const UserDB = require('../model/user.Schema')
 const { Types } = require('mongoose')
+const { resStatus } = require('../../../Node/Login_Register/utilities/resStatus.util')
 
 const userRegister = async ( req, res ) => {
     try {
@@ -24,7 +25,7 @@ const userLogin = async ( req, res ) => {
         }, 'token key', {expiresIn: '1h'})
         console.log('------- user logged in :')
         // res.cookie('token', token, {maxAge: 1 * 60 * 60 * 1000})        // expires in 1 hour
-        res.status(200).json({status: true, token: token})
+        resStatus(200)
     } catch (error) {
         console.log('------- error : ' , error)
     }

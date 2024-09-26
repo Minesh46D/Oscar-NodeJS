@@ -1,4 +1,7 @@
 import express from 'express'
+import fs from 'fs'
+import https from 'https'
+import path from 'path'
 const app = express()
 import 'dotenv/config'
 import dbConnect from './db/dbConnect.js'
@@ -11,16 +14,24 @@ import cors from 'cors'
 // import sqlRouter from './mysql/routes/index.route.js'
 
 dbConnect()
-app.listen(process.env.PORT, (  ) => console.log('------- server started at...', process.env.PORT) )
+
+const options = { 
+    key: fs.readFileSync(path.resolve('./certificate', 'localhost-key.pem')),
+    cert: fs.readFileSync(path.resolve('./certificate', 'localhost.pem'))
+ }
+
+https.createServer( options, app ).listen( process.env.PORT, (  ) => console.log('------- server started at ... : ' , process.env.PORT)  )
+
+// app.listen(process.env.PORT, (  ) => console.log('------- server started at...', process.env.PORT) )
 
 
 app.use(express.json())
 app.use(express.static('uploads'))
-app.use(cookieParser(process.env.COOKIE_SECRET))
 app.use(cors({
-    // origin: 'http://localhost:5173',
-    // credentials: true
+    origin: 'https://127.0.0.1:5173',
+    credentials: true
 }))
+app.use(cookieParser(process.env.COOKIE_SECRET))
 // app.use('/product',express.static('uploads'))
 // http://localhost:5000/product/images/android.png
 // http://localhost:5000/android.png

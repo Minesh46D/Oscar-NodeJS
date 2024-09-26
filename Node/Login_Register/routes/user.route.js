@@ -6,6 +6,7 @@ import { generateUUID } from '../utilities/generateUUID.util.js'
 import { tokenCheck } from '../middleware/tokenCheck.middle.js'
 import { testDB } from '../models/test.model.js'
 import { tryCatch } from '../utilities/tryCatch.util.js'
+import jwt from 'jsonwebtoken'
 
 const router = express.Router()
 
@@ -38,10 +39,30 @@ router.post('/change_password',
 
 
 
-// router.get('/get', tryCatch(async ( req, res ) => {
-//     await testDB.create(req.body)
-//     res.send('get')
-// }) )
+router.get('/set', tryCatch(async ( req, res ) => {                             // XXX remove this at the end of the project
+    res.cookie('tempCookie', 'abc', {
+        secure: true, // This is required when sameSite is 'None'
+        signed: false,
+        maxAge: 20 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'None' // Cross-site cookies
+    });
+    // await testDB.create(req.body)
+    res.send('get')
+}) )
+router.get('/get', tryCatch(async ( req, res ) => {                             // XXX remove this at the end of the project
+    const cookies = req.cookies //
+    const signedCookies = req.signedCookies['ForgotPassword Token']
+    console.log('------- cookies : ' , cookies)
+    console.log('------- signed cookies : ' , signedCookies)
+    console.log('------- Final Cookie : ' , jwt.verify( signedCookies , process.env.COOKIE_SECRET))
+
+    res.status(200).json({ cookies, signedCookies })
+    // resStatus( 200, res, null, `cookie: ${cookie}` )
+    // res.clearCookie('tempCookie')
+    // await testDB.create(req.body)
+    // res.send('get')
+}) )
 
 
 // res.clearCookie("Login Token");

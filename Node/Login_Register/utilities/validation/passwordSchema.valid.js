@@ -10,7 +10,7 @@ const userError = {
 export const passwordSchema = Joi.object({
     newPassword: Joi.string()
         .required()
-        .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)
+        // .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)           // FIXME Joi Password pattern
         .messages(userError.password),
     confirmPassword: Joi.string()
         .required()

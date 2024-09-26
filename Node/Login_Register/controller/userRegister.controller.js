@@ -121,9 +121,25 @@ export const userLogin = tryCatch(async (req, res) => {
   const loginToken = jwt.sign({
     email: User.email,
     role: getRole.role_Name
-  }, 'nodeTokenExampleKey')
+  }, process.env.JWT_SECRET)
 
-  res.cookie('Login Token', loginToken, { signed: true, maxAge: 20 * 60 * 1000, httpOnly: true} )         // 20 min expire time
+  res.cookie('Login Token', loginToken, { 
+    signed: true, 
+    secure: true,
+    httpOnly: true,
+    sameSite: 'None',
+    maxAge: 20 * 60 * 1000, 
+  } )         // 20 min expire time
+  res.cookie('Login Data', JSON.stringify({
+    isAuthenticated: true,
+    isVerified: User.isVerified,
+    isAccountActive: User.status,
+    role_ID: User.role_ID
+  }), { 
+    secure: true,
+    sameSite: 'None',
+    maxAge: 20 * 60 * 1000,
+   })
   return resStatus(200, res, null, loginMessage, {
     data: {
       ...User._doc,
@@ -139,6 +155,7 @@ export const userLogin = tryCatch(async (req, res) => {
 
 export const userLogout = tryCatch( async ( req, res ) => {
   res.clearCookie('Login Token')
+  res.clearCookie('Login Data')
   resStatus( 200, res, null, 'Logout Success' )
 }  );  
 
@@ -159,9 +176,14 @@ export const sendPasswordOTP = tryCatch(async (req, res) => {
   console.log(`-------Your OTP to reset Password is: ${User.otp}`)
   
   // ---------------------    Save Email to Browser Cookie     ---------------------
-  res.cookie('ForgotPassword Token', {
-    email: User.email
-  }, { signed: true, maxAge: 10 * 60 * 1000, httpOnly: true} ) 
+  const ForgotPassword_Token = jwt.sign( { email: User.email }, process.env.COOKIE_SECRET )
+  res.cookie('ForgotPassword Token', ForgotPassword_Token, { 
+    secure: true,                   // https only
+    sameSite: 'None',               // cros origin
+    signed: true,                   // signed with cookie-parser
+    httpOnly: true,                 // no frontend access
+    maxAge: 10 * 60 * 1000,         // 10 min
+  } ) 
   return resStatus(200, res, `Email verify success, OTP sent to ${email} !`)
 });
 
@@ -173,7 +195,8 @@ export const changePassword = tryCatch(async (req, res) => {
   // ---------------------    Empty Field Validation     ---------------------
   checkFields( res, ...fields );
   
-  const user = await UserDB.findOne({ email });
+  const user = await UserDB.findOne({ email, otp: { $exists: false } });
+  console.log('------- user : ' , user)
   const hashPassword = await bcrypt.hash(newPassword, 10);
   // ---------------------    Confirm Password     ---------------------
   const checkBothPassword = await bcrypt.compare(confirmPassword, hashPassword);
