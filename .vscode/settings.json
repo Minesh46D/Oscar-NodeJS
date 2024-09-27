@@ -18,6 +18,7 @@
     "Node/package.json": false,
     "Node\\.vscode": false,
     "Oscar-Node-Project": false,
+<<<<<<< HEAD
     "Node/[!L]*/**": true,
     "Node/L[!o]*/**": true,
     "Node/Lo[!g]*/**": true,
@@ -36,5 +37,25 @@
     "N[!o]*/**": true,
     "No[!d]*/**": true,
     "Nod[!e]*/**": true
+=======
+    "[!N]*/**": false,
+    "N[!o]*/**": false,
+    "No[!d]*/**": false,
+    "Nod[!e]*/**": false,
+    "Node/[!L]*/**": false,
+    "Node/L[!o]*/**": false,
+    "Node/Lo[!g]*/**": false,
+    "Node/Log[!i]*/**": false,
+    "Node/Logi[!n]*/**": false,
+    "Node/Login[!_]*/**": false,
+    "Node/Login_[!R]*/**": false,
+    "Node/Login_R[!e]*/**": false,
+    "Node/Login_Re[!g]*/**": false,
+    "Node/Login_Reg[!i]*/**": false,
+    "Node/Login_Regi[!s]*/**": false,
+    "Node/Login_Regis[!t]*/**": false,
+    "Node/Login_Regist[!e]*/**": false,
+    "Node/Login_Registe[!r]*/**": false
+>>>>>>> de3f71f640064c7f75658a64692206c86a1b8c34
   }
 }
