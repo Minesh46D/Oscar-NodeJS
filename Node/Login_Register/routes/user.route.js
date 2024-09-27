@@ -1,5 +1,5 @@
 import express from 'express'
-import { changePassword, checkEmail, checkUser, otpVerify, resendEmail, sendPasswordOTP, userLogin, userLogout, userRegister, verifyEmail } from '../controller/userRegister.controller.js'
+import { changePassword, checkEmail, checkUser, getUser, otpVerify, resendEmail, sendPasswordOTP, userLogin, userLogout, userRegister, verifyEmail } from '../controller/userRegister.controller.js'
 import { validationAsync } from '../utilities/validationAsync.js'
 import { resStatus } from '../utilities/resStatus.util.js'
 import { generateUUID } from '../utilities/generateUUID.util.js'
@@ -15,6 +15,10 @@ const router = express.Router()
 router.post('/register', validationAsync( 'registerSchema' ), userRegister)
 // router.post('/login', validationAsync( 'loginSchema' ), userLogin)
 router.post('/login', userLogin )
+router.get('/',
+    tokenCheck( 'Login Token' ),
+    getUser 
+)
 router.get('/logout', userLogout )
 router.post('/verify_Email/:emailVerifyToken', verifyEmail)
 router.post('/resendEmailVerify', resendEmail)

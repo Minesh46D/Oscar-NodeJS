@@ -11,6 +11,18 @@ import { generateUUID } from "../utilities/generateUUID.util.js";
 import Decimal from 'decimal.js'
 import { checkFields } from "../utilities/checkFields.js";
 
+export const getUser = tryCatch( async ( req, res ) => {
+  const userData = await UserDB.findOne({ email: req?.local?.email })
+  .select({ email: 1, firstName: 1, lastName: 1, gender: 1, phone_no: 1, address: 1, _id: 0 })
+  if(!userData){
+    return resStatus(400, res, 'User Not Found')
+  }
+  resStatus(200, res, null, 'done', {
+    data: userData
+  })
+
+}   )  
+
 export const userRegister = tryCatch(async (req, res) => {
   let ref_ID
   let userWallet
@@ -122,13 +134,14 @@ export const userLogin = tryCatch(async (req, res) => {
     email: User.email,
     role: getRole.role_Name
   }, process.env.JWT_SECRET)
+  console.log('------- process.env.JWT_SECRET : ' , process.env.JWT_SECRET)
 
   res.cookie('Login Token', loginToken, { 
     signed: true, 
     secure: true,
     httpOnly: true,
     sameSite: 'None',
-    maxAge: 20 * 60 * 1000, 
+    maxAge: 60 * 60 * 1000,         // FIXME change this to 20 min
   } )         // 20 min expire time
   res.cookie('Login Data', JSON.stringify({
     isAuthenticated: true,
@@ -138,7 +151,7 @@ export const userLogin = tryCatch(async (req, res) => {
   }), { 
     secure: true,
     sameSite: 'None',
-    maxAge: 20 * 60 * 1000,
+    maxAge: 60 * 60 * 1000,       // FIXME change this to 20 min
    })
   return resStatus(200, res, null, loginMessage, {
     data: {
@@ -197,6 +210,9 @@ export const changePassword = tryCatch(async (req, res) => {
   
   const user = await UserDB.findOne({ email, otp: { $exists: false } });
   console.log('------- user : ' , user)
+  if(!user){
+    return resStatus(400, res, 'OTP not verified')
+  }
   const hashPassword = await bcrypt.hash(newPassword, 10);
   // ---------------------    Confirm Password     ---------------------
   const checkBothPassword = await bcrypt.compare(confirmPassword, hashPassword);
