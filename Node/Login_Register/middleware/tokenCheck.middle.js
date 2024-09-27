@@ -8,7 +8,7 @@ export const tokenCheck = ( tokenName ) => ( req, res, next ) => {
     }
     let decoded = ''
     try {
-        decoded = jwt.verify( signedCookie, process.env.COOKIE_SECRET )
+        decoded = jwt.verify( signedCookie, process.env.JWT_SECRET )
     } catch (error) {
         console.log('------- token error : ' , error)
         return resStatus(400, res, "Invalid jwt Token")             // TODO delete jwt
