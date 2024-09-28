@@ -13,15 +13,123 @@ import { checkFields } from "../utilities/checkFields.js";
 
 export const getUser = tryCatch( async ( req, res ) => {
   const userData = await UserDB.findOne({ email: req?.local?.email })
-  .select({ email: 1, firstName: 1, lastName: 1, gender: 1, phone_no: 1, address: 1, _id: 0 })
+  .select({ userName: 1, email: 1, firstName: 1, lastName: 1, gender: 1, phone_no: 1, address: 1, _id: 0 })
   if(!userData){
     return resStatus(400, res, 'User Not Found')
   }
   resStatus(200, res, null, 'done', {
     data: userData
   })
+})
 
-}   )  
+export const getAllUsers = tryCatch( async ( req, res ) => {
+  console.log('------- req.body : ' , req.query)
+  const { results, page, filters, sortField, sortOrder } = req.query
+  function toBoolean(value) {
+      if (typeof value === 'string') {
+        return value.toLowerCase() === 'true';
+      }
+      return !!value;  // Convert other types like numbers (0 -> false, 1 -> true) or null/undefined
+  }
+  const fields = {
+      _id: 0,
+      userName: 1,
+      firstName: 1,
+      lastName: 1,
+      wallet: 1,
+      gender: 1,
+      isVerified: 1,
+      status: 1,
+      email: 1,
+      index: 1,
+      role_Name: 1
+  }
+  let filter = ''
+  // console.log('------- params : ' , results, page, filters, sortField, sortOrder)
+  // console.log('------- filters : ' , Object.values(filters)[0])
+  if( typeof filters === 'object' ){
+      console.log('------- obj : ' , Object.values( filters ))
+  }
+  if(typeof filters === 'object' && Object.values( filters ).some(( item ) => item ) ){
+      Object.keys(filters).map(( item ) => {
+          if(filters[item]){
+              if( filters[item][0] === 'true' ||  filters[item][0] === 'false'){
+                  console.log('-------  : filter value ' , toBoolean(filters[item][0]) )                              // XXX Remove this
+                  filter = { ...filter, [item]: toBoolean(filters[item][0]) }
+              }else{
+                  filter = { ...filter, [item]: {$in: filters[item]} }
+              }
+          }
+          
+      } )
+  }else{
+      // console.log('------- filters : ' , filters)
+      filter = { 'userName': { $exists: true } }
+  }
+  console.log('------- filter : ' , filter)
+  const userData = await UserDB.aggregate([
+      {
+          $group: {
+              _id: null,
+              documents: {
+              $push: "$$ROOT"
+              }
+          }
+      },
+      {
+          $unwind: {
+              path: "$documents",
+              includeArrayIndex: 'index',
+          }
+      },
+      {
+          $addFields: {
+              "documents.index": { $add: ["$index", 1] }
+          }
+      },
+      {
+          $replaceRoot: {
+              newRoot: "$documents"
+          }
+      },
+      {
+          $lookup: {
+          from: "roles",
+          localField: "role_ID",
+          foreignField: "role_ID",
+          as: "result"
+          }
+      },
+      {
+          $unwind: "$result"
+      },
+      {
+          $addFields:{
+              role_Name: "$result.role_Name"
+          }
+      },
+      {
+          $match: filter
+      },
+      {
+          $sort: {
+              [sortField]: sortOrder === "descend" ? -1 : 1
+          }
+      },
+      {
+          $skip: page-1 ? (page-1) * results : 0
+      },
+      {
+          $limit: +results
+      },
+      {
+          $project: fields
+      },
+  ])
+  resStatus(200, res, null, 'Success', {
+      data: userData
+  })
+}  )
 
 export const userRegister = tryCatch(async (req, res) => {
   let ref_ID
@@ -93,6 +201,40 @@ export const userRegister = tryCatch(async (req, res) => {
   res.status(200).json({ status: true, message: "Registered", data: getUser });
 });
 
+export const updateAddress = tryCatch( async ( req, res ) => {
+  const { address } = req.body
+  let APImessage = ''
+  checkFields(res, address)
+
+  const userData = await UserDB.findOne({ email: req?.local?.email })
+  if(!userData){
+    return resStatus(400, res, 'User Not Found')
+  }
+  APImessage = userData.address ? 'Address Updated' : 'Address Added'
+  userData.address = address
+  await userData.save()
+
+  resStatus(200, res, null, APImessage)
+
+}  )
+
+export const blockUser = tryCatch( async ( req, res ) => {
+  const { email, status } = req.body
+  checkFields(res, email);
+
+  const user = await UserDB.findOne({ email })
+  if(!user){
+    return resStatus(400, res, 'User not found')
+  }
+  if(user.role_ID === 1){
+    return resStatus(401, res, null)
+  }
+  user.status = status,
+  await user.save()
+
+  resStatus(200, res, null, status ? 'User Unblocked' : 'User Blocked')
+}  )
+
 export const userLogin = tryCatch(async (req, res) => {
   const { userName, password } = req.body;
   checkFields( res, userName, password );
@@ -134,8 +276,6 @@ export const userLogin = tryCatch(async (req, res) => {
     email: User.email,
     role: getRole.role_Name
   }, process.env.JWT_SECRET)
-  console.log('------- process.env.JWT_SECRET : ' , process.env.JWT_SECRET)
-  console.log('------- process.env.JWT_SECRET : ' , process.env.JWT_SECRET)
 
   res.cookie('Login Token', loginToken, { 
     signed: true, 
@@ -192,8 +332,8 @@ export const sendPasswordOTP = tryCatch(async (req, res) => {
   console.log(`-------Your OTP to reset Password is: ${User.otp}`)
   
   // ---------------------    Save Email to Browser Cookie     ---------------------
-  const ForgotPassword_Token = jwt.sign( { email: User.email }, process.env.COOKIE_SECRET )
-  res.cookie('ForgotPassword Token', ForgotPassword_Token, { 
+  const ForgotPassword_Token = jwt.sign( { email: User.email }, 'nodeTokenExampleKey' )
+  res.cookie('ForgotPassword Token', ForgotPassword_Token, {  
     secure: true,                   // https only
     sameSite: 'None',               // cros origin
     signed: true,                   // signed with cookie-parser

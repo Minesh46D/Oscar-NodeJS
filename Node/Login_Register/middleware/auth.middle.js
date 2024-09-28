@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
-import { resStatus } from '../utilities/resStatus.util'
+import { resStatus } from '../utilities/resStatus.util.js'
 
 export const authorize = ( role ) => ( req, res, next ) => {
-    // const auth = req.get('Authorization')
+    // const auth = req.get('Authorization')                        // XXX remove this comments
     // if(!auth){
     //     return resStatus(401, res, 'Token required')
     // }
@@ -14,9 +14,8 @@ export const authorize = ( role ) => ( req, res, next ) => {
     // } catch (error) {
     //     return res.status(200).json({status: false, message: error.message})
     // }
-
-
     if( !role?.includes( req.local?.role ) ){
         return res.status(401).json({status: false, message: "Unauthorized User"})
     }
+    next()
 }  

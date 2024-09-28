@@ -8,6 +8,7 @@ export const tokenCheck = ( tokenName ) => ( req, res, next ) => {
     }
     let decoded = ''
     try {
+        console.log('-------  : ' , 'nodeTokenExampleKey')
         decoded = jwt.verify( signedCookie, process.env.JWT_SECRET )
     } catch (error) {
         console.log('------- token error : ' , error)

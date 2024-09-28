@@ -58,6 +58,10 @@ const userSchema = new Schema({
         trim: true,
         enum: ['Male', 'Female', 'Others']
     },
+    address: {
+        type: String,
+        trim: true
+    },
     wallet: {
         type: Types.Decimal128,
         default: 500.000

@@ -1,5 +1,5 @@
 import express from 'express'
-import { changePassword, checkEmail, checkUser, getUser, otpVerify, resendEmail, sendPasswordOTP, userLogin, userLogout, userRegister, verifyEmail } from '../controller/userRegister.controller.js'
+import { blockUser, changePassword, checkEmail, checkUser, getAllUsers, getUser, otpVerify, resendEmail, sendPasswordOTP, updateAddress, userLogin, userLogout, userRegister, verifyEmail } from '../controller/userRegister.controller.js'
 import { validationAsync } from '../utilities/validationAsync.js'
 import { resStatus } from '../utilities/resStatus.util.js'
 import { generateUUID } from '../utilities/generateUUID.util.js'
@@ -7,6 +7,10 @@ import { tokenCheck } from '../middleware/tokenCheck.middle.js'
 import { testDB } from '../models/test.model.js'
 import { tryCatch } from '../utilities/tryCatch.util.js'
 import jwt from 'jsonwebtoken'
+import { authorize } from '../middleware/auth.middle.js'
+import { UserDB } from '../models/user.model.js'
+import qs from 'qs'
+
 
 const router = express.Router()
 
@@ -17,7 +21,21 @@ router.post('/register', validationAsync( 'registerSchema' ), userRegister)
 router.post('/login', userLogin )
 router.get('/',
     tokenCheck( 'Login Token' ),
-    getUser 
+    getUser
+)
+router.get('/getAllUser',
+    tokenCheck( 'Login Token' ),
+    authorize([ 'Admin', 'Manager' ]),
+    getAllUsers
+)
+router.post('/updateUserAddress',
+    tokenCheck( 'Login Token' ),
+    updateAddress
+)
+router.post('/blockUser',
+    tokenCheck( 'Login Token' ),
+    authorize([ 'Admin' ]),
+    blockUser
 )
 router.get('/logout', userLogout )
 router.post('/verify_Email/:emailVerifyToken', verifyEmail)
@@ -54,18 +72,18 @@ router.get('/set', tryCatch(async ( req, res ) => {                             
     // await testDB.create(req.body)
     res.send('get')
 }) )
-router.get('/get', tryCatch(async ( req, res ) => {                             // XXX remove this at the end of the project
-    const cookies = req.cookies //
-    const signedCookies = req.signedCookies['ForgotPassword Token']
-    console.log('------- cookies : ' , cookies)
-    console.log('------- signed cookies : ' , signedCookies)
-    console.log('------- Final Cookie : ' , jwt.verify( signedCookies , process.env.COOKIE_SECRET))
+router.get('/get', tokenCheck( 'Login Token' ), authorize([ 'Admin','Manager' ]) ,tryCatch(async ( req, res ) => {                             // XXX remove this at the end of the project
+    
+    // const cookies = req.cookies //
+    // const signedCookies = req.signedCookies['ForgotPassword Token']
+    // console.log('------- cookies : ' , cookies)
+    // console.log('------- signed cookies : ' , signedCookies)
+    // console.log('------- Final Cookie : ' , jwt.verify( signedCookies , process.env.COOKIE_SECRET))
 
-    res.status(200).json({ cookies, signedCookies })
+    // res.status(200).json({ cookies, signedCookies })
     // resStatus( 200, res, null, `cookie: ${cookie}` )
     // res.clearCookie('tempCookie')
     // await testDB.create(req.body)
-    // res.send('get')
 }) )
 
 
